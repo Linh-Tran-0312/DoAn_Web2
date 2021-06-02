@@ -1,15 +1,8 @@
 <?php 
 session_start();
-
-if(isset($_SESSION['isLogin']) && $_SESSION['isLogin'] === true) {
-
+$_SESSION['isLogin'] = false;
  
-    $html = file_get_contents('./layouts/GD1.html');
-   
-    echo $html;
 
-} else {
-  
     $page = "";
 	if (isset($_REQUEST["page"])) {
 		# code...
@@ -17,6 +10,10 @@ if(isset($_SESSION['isLogin']) && $_SESSION['isLogin'] === true) {
 	}
     $content = "";
     switch($page) {
+        case 'login':
+            ob_start();
+            include_once('./includes/login.php');
+            break;
         case 'profile':
             ob_start();
             include_once('./includes/profile.php'); 
@@ -39,12 +36,20 @@ if(isset($_SESSION['isLogin']) && $_SESSION['isLogin'] === true) {
             break;
     }
  
- 
-    $html = file_get_contents('./layouts/GD2.html');
-    $html = str_replace("<<$page>>", 'active', $html);
-    $html = str_replace('<<pos_page_name>>', $page, $html);
+    if($page == 'login') {
+        $content = ob_get_clean();
+        $html = file_get_contents('./layouts/GD1.html');
+     
+    } else {
+        $html = file_get_contents('./layouts/GD2.html');
+        $html = str_replace("<<$page>>", 'active', $html);
+        $html = str_replace('<<pos_page_name>>', $page, $html);
+    }
+
     $html = str_replace('<<pos_page_content>>', $content, $html);
     print $html;
-}
+ 
+  
+ 
 
 ?>
