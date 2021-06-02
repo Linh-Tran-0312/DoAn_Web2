@@ -27,6 +27,16 @@ if(isset($_SESSION['isLogin']) && $_SESSION['isLogin'] === true) {
             include_once('./includes/project.php'); 
             $content =  ob_get_clean();
             break;
+        case 'task':
+            ob_start();
+            include_once('./includes/task.php'); 
+            $content =  ob_get_clean();
+            break;
+        case 'task-details':
+            ob_start();
+            include_once('./includes/task-details.php'); 
+            $content =  ob_get_clean();
+            break;
     }
  
  
