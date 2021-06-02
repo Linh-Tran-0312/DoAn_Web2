@@ -8,9 +8,9 @@
                 </div>
                 <div class="col text-right">
                     <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('id01').style.display='block'">Add new task</button>
+               
+
                 </div>
-
-
 <!-- Add Task Modal -->
 <div id="id01" class="w3-modal">
   <div class="w3-modal-content">
@@ -74,9 +74,9 @@
 </div>
 <!-- //Add Task Modal -->
 
+                  
 
-            </div>
-            <div class="card-body px-0 pt-0 pb-2">
+            <div class="card-body px-0 pt-2 pb-2">
               <div class="table-responsive p-0">
                 <table class="table align-items-center justify-content-center mb-0">
                   <thead>
@@ -302,6 +302,8 @@
           </div>
         </div>
       </div>
+
+
       <footer class="footer pt-3">
         <div class="container-fluid">
           <div class="row align-items-center justify-content-lg-between">

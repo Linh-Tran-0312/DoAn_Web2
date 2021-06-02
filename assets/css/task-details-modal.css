@@ -1,4 +1,4 @@
-.w3-modal {
+.w3-modal-details {
 	z-index: 10000;
 	display: none;
 	padding-top: 100px;
@@ -11,7 +11,7 @@
 	background-color: rgb(0, 0, 0);
 	background-color: rgba(0, 0, 0, 0.4);
 }
-.w3-modal-content {
+.w3-modal-content-details {
 	margin: auto;
 	background-color: #fff;
 	position: relative;
@@ -21,7 +21,7 @@
 	height: 200px;
 	border-radius: 10px;
 }
-.w3-display-right {
+.w3-display-right-details {
 	position: absolute;
 	top: 50%;
 	right: 0%;
@@ -41,21 +41,21 @@
 	cursor: pointer;
 	white-space: nowrap;
 }
-.w3-display-topright {
+.w3-display-topright-details {
 	position: absolute;
 	right: 0;
 	top: 0;
 }
-.w3-content,
-.w3-auto {
+.w3-content-details,
+.w3-auto-details {
 	margin-left: auto;
 	margin-right: auto;
 }
-.w3-container,
-.w3-panel {
+.w3-container-details,
+.w3-panel-details {
 	padding: 0.01em 16px;
 }
-.form-modal {
+.form-modal-details {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -63,19 +63,19 @@
 	width: 100%;
 	height: 200px;
 }
-.form-modal select {
+.form-modal-details select {
 	border: 1px solid gray;
 	border-radius: 5px;
 	width: 90%;
 }
-.staff-table {
+.staff-table-details {
 	width: 100%;
 
 	padding: 15px;
 	display: flex;
 	flex-wrap: wrap;
 }
-.name-staff {
+.name-staff-details {
 	border: 1px #cb0c9f solid;
 	border-radius: 25px;
 	padding: 5px;
@@ -84,7 +84,7 @@
 	color: #cb0c9f;
 	margin: 5px;
 }
-.status {
+.status-details {
 	display: flex;
 	flex-wrap: wrap;
 }

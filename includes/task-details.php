@@ -40,13 +40,13 @@
                 <!--   Modal for updating task state -->
 
 
-                <div class="w3-container">
+                <div class="w3-container-details">
                  
-                  <div id="id01" class="w3-modal">
-                    <div class="w3-modal-content">
-                      <div class="w3-container">
-                        <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-display-topright">&times;</span>
-                      <form class="form-modal">
+                  <div id="id01" class="w3-modal-details">
+                    <div class="w3-modal-content-details">
+                      <div class="w3-container-details">
+                        <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-display-topright-details">&times;</span>
+                      <form class="form-modal-details">
                        <h3>Update your task status</h3> 
                         <select name="status" class="my-2">
                           <option value="OPEN">NEW ISSUE</option>

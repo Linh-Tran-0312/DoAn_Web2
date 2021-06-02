@@ -1,5 +1,5 @@
 .w3-modal {
-	z-index: 10000;
+	z-index: 100000;
 	display: none;
 	padding-top: 100px;
 	position: fixed;
@@ -13,6 +13,7 @@
    
 }
 .w3-modal-content {
+	z-index: 100000;
 	margin: auto;
 	background-color: #fff;
 	position: relative;
