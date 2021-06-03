@@ -1,148 +1,96 @@
+<?php 
+
+require_once('./services/connectionSQL.php');
+
+$Role = $_SESSION['nhanvien']['Role'];
+$MaNhanVien = $_SESSION['nhanvien']['MaNhanVien'];
+$DS_Project = [];
+
+if($Role == 1) {
+$sql="SELECT `project`.`TenProject`,`project`.`MaProject`, `project`.`Summary`, `project`.`Status` FROM `project` WHERE `MaQuanLy`='$MaNhanVien'";
+$data = mysqli_query($connection, $sql);
+$num_rows = mysqli_num_rows($data);
+if($num_rows != 0) {
+    while($project=mysqli_fetch_assoc($data)) {
+        array_push($DS_Project, $project);
+    }
+}
+
+} else {
+
+    $sql = "SELECT `project`.`TenProject`,`project`.`MaProject`, `project`.`Summary`, `project`.`Status` FROM `project` JOIN `congviec` ON `project`.`MaProject`=`congviec`.`MaProject` JOIN `phancong` ON `phancong`.`MaCongViec`=`congviec`.`MaCongViec` WHERE `phancong` .`MaNhanVien`='$MaNhanVien' GROUP BY `project`.`TenProject`";
+    $data = mysqli_query($connection, $sql);
+$num_rows = mysqli_num_rows($data);
+if($num_rows != 0) {
+    while($project=mysqli_fetch_assoc($data)) {
+        array_push($DS_Project, $project);
+    }
+}
+}
+
+ 
+
+
+?>
+
+
+
+
 <div class="container-fluid py-4">
         <div class="col-12 mt-4">
             <div class="card mb-4">
                 <div class="card-header pb-0 p-3">
                     <h6 class="mb-1">Projects</h6>
-                    <p class="text-sm">Architects design houses</p>
+                    <p class="text-sm">Danh sách dự mà bạn đang tham gia hoặc quản lý</p>
                 </div>
                 <div class="card-body p-3">
                     <div class="row">
-                        <div class="col-xl-3 col-md-4 mb-xl-0 mb-4">
-                            <div class="card card-blog card-plain">
-                                <div class="position-relative">
-                                    <a class="d-block shadow-xl border-radius-xl">
-                                        <img src="./assets/img/home-decor-1.jpg" alt="img-blur-shadow"
-                                            class="img-fluid shadow border-radius-xl">
-                                    </a>
-                                </div>
-                                <div class="card-body px-1 pb-0">
-                                    <p class="text-gradient text-dark mb-2 text-sm">Project #2</p>
-                                    <a href="javascript:;">
+                     <?php 
+                      $num = 1;
+                      foreach($DS_Project as $project) {
+                          $ProjectId = $project['MaProject'];
+                          $Ten = $project['TenProject'];
+                          $Summary = $project['Summary'];
+                          if($project['Status'] === "OPENING") {
+                              $Status = "<div class='btn btn-success py-2 mt-3'>OPENING</div>";
+                          } else {
+                            $Status = "<div class='btn btn-primary py-2 mt-3'>CLOSED</div>";
+                          }
+                          echo "
+                        <div class='col-xl-3 col-md-4 mb-xl-0 mb-4'>
+                        <div class='card card-blog card-plain'>
+                            <div class='position-relative'>
+                                <a class='d-block shadow-xl border-radius-xl'>
+                                    <img src='./assets/img/home-decor-3.jpg' alt='img-blur-shadow'
+                                        class='img-fluid shadow border-radius-xl'>
+                                </a>
+                            </div>
+                            <div class='card-body px-1 pb-0'>
+                                <div>
+                                    <p class='text-gradient text-dark mb-2 text-sm'>Project #$num</p>
+                                    <a href='javascript:;'>
                                         <h5>
-                                            Modern
+                                        $Ten
                                         </h5>
                                     </a>
-                                    <p class="mb-4 text-sm">
-                                        As Uber works through a huge amount of internal management turmoil.
+                                    <p class='mb-4 text-sm'>
+                                        $Summary
                                     </p>
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <form action="./pages/task.html" method="get">
-                                            <button type="submit" class="btn btn-outline-primary btn-sm mb-0">View
-                                                Project</button>
-                                        </form>
-                                        <div class="avatar-group mt-2">
-                                            <a href="javascript:;" class="avatar avatar-xs rounded-circle"
-                                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Elena Morison">
-                                                <img alt="Image placeholder" src="./assets/img/team-1.jpg">
-                                            </a>
-                                            <a href="javascript:;" class="avatar avatar-xs rounded-circle"
-                                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Ryan Milly">
-                                                <img alt="Image placeholder" src="./assets/img/team-2.jpg">
-                                            </a>
-                                            <a href="javascript:;" class="avatar avatar-xs rounded-circle"
-                                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Nick Daniel">
-                                                <img alt="Image placeholder" src="./assets/img/team-3.jpg">
-                                            </a>
-                                            <a href="javascript:;" class="avatar avatar-xs rounded-circle"
-                                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Peterson">
-                                                <img alt="Image placeholder" src="./assets/img/team-4.jpg">
-                                            </a>
-                                        </div>
-                                    </div>
+                                </div>                            
+                                <div class='d-flex align-items-center justify-content-between'>
+                                    <a href='./index?page=task&projectId=$ProjectId' >
+                                        <button type='submit' class='btn btn-outline-primary btn-sm mb-0'>View Project</button>
+                                    </a> 
+                                      $Status                                                                            
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-3 col-md-4 mb-xl-0 mb-4">
-                            <div class="card card-blog card-plain">
-                                <div class="position-relative">
-                                    <a class="d-block shadow-xl border-radius-xl">
-                                        <img src="./assets/img/home-decor-2.jpg" alt="img-blur-shadow"
-                                            class="img-fluid shadow border-radius-lg">
-                                    </a>
-                                </div>
-                                <div class="card-body px-1 pb-0">
-                                    <p class="text-gradient text-dark mb-2 text-sm">Project #1</p>
-                                    <a href="javascript:;">
-                                        <h5>
-                                            Scandinavian
-                                        </h5>
-                                    </a>
-                                    <p class="mb-4 text-sm">
-                                        Music is something that every person has his or her own specific opinion about.
-                                    </p>
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <form action="./pages/task.html" method="get">
-                                            <button type="submit" class="btn btn-outline-primary btn-sm mb-0">View
-                                                Project</button>
-                                        </form>
-                                        <div class="avatar-group mt-2">
-                                            <a href="javascript:;" class="avatar avatar-xs rounded-circle"
-                                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Nick Daniel">
-                                                <img alt="Image placeholder" src="./assets/img/team-3.jpg">
-                                            </a>
-                                            <a href="javascript:;" class="avatar avatar-xs rounded-circle"
-                                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Peterson">
-                                                <img alt="Image placeholder" src="./assets/img/team-4.jpg">
-                                            </a>
-                                            <a href="javascript:;" class="avatar avatar-xs rounded-circle"
-                                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Elena Morison">
-                                                <img alt="Image placeholder" src="./assets/img/team-1.jpg">
-                                            </a>
-                                            <a href="javascript:;" class="avatar avatar-xs rounded-circle"
-                                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Ryan Milly">
-                                                <img alt="Image placeholder" src="./assets/img/team-2.jpg">
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-md-4 mb-xl-0 mb-4">
-                            <div class="card card-blog card-plain">
-                                <div class="position-relative">
-                                    <a class="d-block shadow-xl border-radius-xl">
-                                        <img src="./assets/img/home-decor-3.jpg" alt="img-blur-shadow"
-                                            class="img-fluid shadow border-radius-xl">
-                                    </a>
-                                </div>
-                                <div class="card-body px-1 pb-0">
-                                    <p class="text-gradient text-dark mb-2 text-sm">Project #3</p>
-                                    <a href="javascript:;">
-                                        <h5>
-                                            Minimalist
-                                        </h5>
-                                    </a>
-                                    <p class="mb-4 text-sm">
-                                        Different people have different taste, and various types of music.
-                                    </p>
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <form action="./pages/task.html" method="get">
-                                            <button type="submit" class="btn btn-outline-primary btn-sm mb-0">View
-                                                Project</button>
-                                        </form>
-                                        <div class="avatar-group mt-2">
-                                            <a href="javascript:;" class="avatar avatar-xs rounded-circle"
-                                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Peterson">
-                                                <img alt="Image placeholder" src="./assets/img/team-4.jpg">
-                                            </a>
-                                            <a href="javascript:;" class="avatar avatar-xs rounded-circle"
-                                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Nick Daniel">
-                                                <img alt="Image placeholder" src="./assets/img/team-3.jpg">
-                                            </a>
-                                            <a href="javascript:;" class="avatar avatar-xs rounded-circle"
-                                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Ryan Milly">
-                                                <img alt="Image placeholder" src="./assets/img/team-2.jpg">
-                                            </a>
-                                            <a href="javascript:;" class="avatar avatar-xs rounded-circle"
-                                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Elena Morison">
-                                                <img alt="Image placeholder" src="./assets/img/team-1.jpg">
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-md-4 mb-xl-0 mb-4">
+                    </div>";
+                    $num= $num + 1;  
+                      }  
+                                  
+                    ?>
+                        <div class="col-xl-3 col-md-4 mb-xl-0 mb-4" style="<?php if($Role == 0) echo 'display: none'?>" >
                             <div class="card h-100 card-plain border">
                                 <div class="card-body d-flex flex-column justify-content-center text-center">
                                     <a href="javascript:;" onclick="document.getElementById('id01').style.display='block'">
@@ -174,8 +122,8 @@
                     <div class="form-modal-control">
                       <p>Status</p>
                        <select name="status">
-                         <option value="OPENING">OPENING</option>
-                         <option value="CLOSED">CLOSED</option>
+                         <option value="OPENING" selected>OPENING</option>
+                        
                        </select>
                     </div>
                     <div class="form-modal-control text-align-center  " >

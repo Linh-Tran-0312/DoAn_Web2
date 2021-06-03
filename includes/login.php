@@ -13,7 +13,7 @@ if(isset($_POST['password'])) {
 	$password = $_POST['password'];
 }
 
-/* if (isset($_POST['submit'])) { */
+ if (isset($_POST['submit'])) {  
 $sql = "SELECT * from nhanvien where Email = '$email' and Password= '$password'";
 $data = mysqli_query($connection, $sql);
 $n = mysqli_num_rows($data);
@@ -22,13 +22,16 @@ if($n == 0) {
   $message = "Email hoặc mật khẩu không chính xác vui lòng thử lại";
 } else {  
     while($nhanvien = mysqli_fetch_assoc($data)) {
+      $sql = "SELECT * FROM `nhanvien` JOIN `phongban` ON `nhanvien`.`MaPhongBan` = `phongban`.`MaPhongBan` WHERE `nhanvien`.`MaNhanVien` = '".$nhanvien['MaNhanVien']."'";
+      $data = mysqli_query($connection, $sql);
+      while($nhanvien = mysqli_fetch_assoc($data)) {
         $_SESSION['isLogin'] = true;
         $_SESSION['nhanvien'] = $nhanvien;  
         header('Location: ../DAW2/index.php?page=profile');
+      }         
     }   
 }
-
-/* } */
+}  
 
 
 
@@ -55,7 +58,7 @@ if($n == 0) {
                     <p style="color: red"><?php  echo $message?></p>
                   </div>
                   <div class="text-center">
-                    <button type="submit" class="btn bg-gradient-info w-100 mt-4 mb-0">Sign in</button>
+                    <button type="submit" name="submit" class="btn bg-gradient-info w-100 mt-4 mb-0">Sign in</button>
                   </div>
                  
 </form>

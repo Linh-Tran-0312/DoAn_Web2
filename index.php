@@ -1,19 +1,22 @@
 <?php 
 session_start();
 $_SESSION['isLogin'] = false;
- 
-
-    $page = "";
-	if (isset($_REQUEST["page"])) {
+$content = "";
+$page = "";
+	if (!isset($_REQUEST["page"]) || $_REQUEST["page"] == 'login' ) {
 		# code...
-		$page = $_REQUEST["page"];
-	}
-    $content = "";
+        ob_start();
+        include_once('./includes/login.php');
+        $content = ob_get_clean();
+        $html = file_get_contents('./layouts/GD1.html');
+        $html = str_replace('<<pos_page_content>>', $content, $html);
+        echo $html;
+	} else {
+        $page = $_REQUEST["page"];
+
+   
+ 
     switch($page) {
-        case 'login':
-            ob_start();
-            include_once('./includes/login.php');
-            break;
         case 'profile':
             ob_start();
             include_once('./includes/profile.php'); 
@@ -36,19 +39,13 @@ $_SESSION['isLogin'] = false;
             break;
     }
  
-    if($page == 'login') {
-        $content = ob_get_clean();
-        $html = file_get_contents('./layouts/GD1.html');
-     
-    } else {
-        $html = file_get_contents('./layouts/GD2.html');
-        $html = str_replace("<<$page>>", 'active', $html);
-        $html = str_replace('<<pos_page_name>>', $page, $html);
-    }
 
+    $html = file_get_contents('./layouts/GD2.html');
+    $html = str_replace("<<$page>>", 'active', $html);
+    $html = str_replace('<<pos_page_name>>', $page, $html);
     $html = str_replace('<<pos_page_content>>', $content, $html);
     print $html;
- 
+}
   
  
 

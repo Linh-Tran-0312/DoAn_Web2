@@ -1,12 +1,54 @@
+<?php
+
+$ProjectId = "";
+$MaNhanVien = $_SESSION['nhanvien']['MaNhanVien'];
+$Role = $_SESSION['nhanvien']['Role'];
+$TenProject = "";
+$DS_Tasks = [];
+require_once('./services/connectionSQL.php');
+if(isset($_REQUEST['projectId'])) {
+  $ProjectId = $_REQUEST['projectId'];
+}
+
+if($Role == 1) {
+  $sql = "SELECT `project`.`TenProject`,`congviec`.`MaCongViec`, `congviec`.`TenCongViec`, `congviec`.`NgayTao`,`congviec`.`Deadline`, `congviec`.`Status`, `nhanvien`.`TenNhanVien`  FROM `congviec` JOIN `nhanvien` ON `congviec`.`PhuTrach`=`nhanvien`.`MaNhanVien` JOIN `project` ON `congviec`.`MaProject`=`project`.`MaProject` WHERE `congviec`.`MaProject`='$ProjectId'";  
+  $data = mysqli_query($connection, $sql);
+  $num_rows = mysqli_num_rows($data);
+  if($num_rows != 0) {
+      while($task=mysqli_fetch_assoc($data)) {
+          $TenProject = $task['TenProject'];
+          array_push($DS_Tasks, $task);
+      }
+  }
+
+
+} else {
+  $sql = "SELECT `project`.`TenProject`,`congviec`.`MaCongViec`, `congviec`.`TenCongViec`, `congviec`.`NgayTao`,`congviec`.`Deadline`, `congviec`.`Status`, `nhanvien`.`TenNhanVien`  FROM `congviec` JOIN `nhanvien` ON `congviec`.`MaQuanLy`=`nhanvien`.`MaNhanVien` JOIN `project` ON `congviec`.`MaProject`=`project`.`MaProject` WHERE `congviec`.`MaProject`='$ProjectId' AND `congviec`.`PhuTrach`='$MaNhanVien'";
+  $data = mysqli_query($connection, $sql);
+  $num_rows = mysqli_num_rows($data);
+  if($num_rows != 0) {
+      while($task=mysqli_fetch_assoc($data)) {
+        $TenProject = $task['TenProject'];
+          array_push($DS_Tasks, $task);
+      }
+  }
+
+}
+
+
+?>
+
+
 <div class="container-fluid py-4">
       <div class="row">
         <div class="col-12">
           <div class="card mb-4">
             <div class="row card-header pb-0">
                 <div class="col">
-                    <h6>List tasks</h6>
+                    <h5><?php echo $TenProject?></h5>
+                    <h6>Task List</h6>
                 </div>
-                <div class="col text-right">
+                <div class="col text-right" style="<?php if($Role == 0) echo 'display: none'?>">
                     <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('id01').style.display='block'">Add new task</button>
                
 
@@ -81,220 +123,65 @@
                 <table class="table align-items-center justify-content-center mb-0">
                   <thead>
                     <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Task Name</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Assignee</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Create Date</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tên Công Việc</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"><?php if($Role == 0) {echo 'Quản Lý';} else { echo 'Phụ Trách'; }?></th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Ngày tạo</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Deadline</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder text-center opacity-7 ps-2">Completion</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Trạng Thái</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder text-center opacity-7 ps-2">Tiến Độ</th>
                       <th></th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
+                    <?php
+                    foreach($DS_Tasks as $task) {
+                      $taskId = $task['MaCongViec'];
+                      $name = $task['TenCongViec'];
+                      $phutrach = $task['TenNhanVien'];
+                      $ngaytao = $task['NgayTao'];
+                      $deadline = $task['Deadline'];
+                      $status = $task['Status'];
+
+                      echo "
+                      
+                      <tr>
+                     
                       <td>
-                        <div class="d-flex px-2">
+                        <div class='d-flex px-2'>
                           <div>
-                            <img src="./assets/img/small-logos/logo-spotify.svg" class="avatar avatar-sm rounded-circle me-2">
+                            <img src='./assets/img/small-logos/logo-slack.svg' class='avatar avatar-sm rounded-circle me-2'>
                           </div>
-                          <div class="my-auto">
-                            <h6 class="mb-0 text-sm">Spotify</h6>
+                          <div class='my-auto'>
+                            <h6 class='mb-0 text-sm'>$name</h6>
                           </div>
                         </div>
                       </td>
                       <td>
-                        <p class="text-sm font-weight-bold mb-0">Nam</p>
+                        <p class='text-sm font-weight-bold mb-0'>$phutrach</p>
                       </td>
                       <td>
-                        <p class="text-sm font-weight-bold mb-0">22-05-2021</p>
+                        <p class='text-sm font-weight-bold mb-0'>$ngaytao</p>
                       </td>
                       <td>
-                        <p class="text-sm font-weight-bold mb-0">28-05-2021</p>
+                        <p class='text-sm font-weight-bold mb-0'>$deadline</p>
                       </td>
                       <td>
-                        <span class="text-xs font-weight-bold">working</span>
+                        <span class='text-xs font-weight-bold'>$status</span>
                       </td>
-                      <td class="align-middle text-center">
-                        <div class="d-flex align-items-center justify-content-center">
-                          <span class="me-2 text-xs font-weight-bold">60%</span>
-                          <div>
-                            <div class="progress">
-                              <div class="progress-bar bg-gradient-info" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;"></div>
-                            </div>
-                          </div>
+                      <td class='align-middle text-center'>
+                        <div class='d-flex align-items-center justify-content-center'>
+                        <a href='./index?page=task-details&taskId=$taskId' >
+                        <div class='btn btn-info'>Chi tiết</div>
+                        </a>
                         </div>
                       </td>
+                     
                     </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2">
-                          <div>
-                            <img src="./assets/img/small-logos/logo-invision.svg" class="avatar avatar-sm rounded-circle me-2">
-                          </div>
-                          <div class="my-auto">
-                            <h6 class="mb-0 text-sm">Invision</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">Nam</p>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">22-05-2021</p>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">28-05-2021</p>
-                      </td>
-                      <td>
-                        <span class="text-xs font-weight-bold">done</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <div class="d-flex align-items-center justify-content-center">
-                          <span class="me-2 text-xs font-weight-bold">100%</span>
-                          <div>
-                            <div class="progress">
-                              <div class="progress-bar bg-gradient-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2">
-                          <div>
-                            <img src="./assets/img/small-logos/logo-jira.svg" class="avatar avatar-sm rounded-circle me-2">
-                          </div>
-                          <div class="my-auto">
-                            <h6 class="mb-0 text-sm">Jira</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">Nam</p>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">22-05-2021</p>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">28-05-2021</p>
-                      </td>
-                      <td>
-                        <span class="text-xs font-weight-bold">canceled</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <div class="d-flex align-items-center justify-content-center">
-                          <span class="me-2 text-xs font-weight-bold">30%</span>
-                          <div>
-                            <div class="progress">
-                              <div class="progress-bar bg-gradient-danger" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="30" style="width: 30%;"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2">
-                          <div>
-                            <img src="./assets/img/small-logos/logo-slack.svg" class="avatar avatar-sm rounded-circle me-2">
-                          </div>
-                          <div class="my-auto">
-                            <h6 class="mb-0 text-sm">Slack</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">Nam</p>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">22-05-2021</p>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">28-05-2021</p>
-                      </td>
-                      <td>
-                        <span class="text-xs font-weight-bold">canceled</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <div class="d-flex align-items-center justify-content-center">
-                          <span class="me-2 text-xs font-weight-bold">0%</span>
-                          <div>
-                            <div class="progress">
-                              <div class="progress-bar bg-gradient-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width: 0%;"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2">
-                          <div>
-                            <img src="./assets/img/small-logos/logo-webdev.svg" class="avatar avatar-sm rounded-circle me-2">
-                          </div>
-                          <div class="my-auto">
-                            <h6 class="mb-0 text-sm">Webdev</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">Nam</p>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">22-05-2021</p>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">28-05-2021</p>
-                      </td>
-                      <td>
-                        <span class="text-xs font-weight-bold">working</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <div class="d-flex align-items-center justify-content-center">
-                          <span class="me-2 text-xs font-weight-bold">80%</span>
-                          <div>
-                            <div class="progress">
-                              <div class="progress-bar bg-gradient-info" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="80" style="width: 80%;"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2">
-                          <div>
-                            <img src="./assets/img/small-logos/logo-xd.svg" class="avatar avatar-sm rounded-circle me-2">
-                          </div>
-                          <div class="my-auto">
-                            <h6 class="mb-0 text-sm">Adobe XD</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">Nam</p>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">22-05-2021</p>
-                      </td>
-                      <td>
-                        <p class="text-sm font-weight-bold mb-0">28-05-2021</p>
-                      </td>
-                      <td>
-                        <span class="text-xs font-weight-bold">done</span>
-                      </td>
-                      <td class="align-middle text-center">
-                        <div class="d-flex align-items-center justify-content-center">
-                          <span class="me-2 text-xs font-weight-bold">100%</span>
-                          <div>
-                            <div class="progress">
-                              <div class="progress-bar bg-gradient-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
+                   
+                    ";
+                    }
+            
+                     ?>
                   </tbody>
                 </table>
               </div>
