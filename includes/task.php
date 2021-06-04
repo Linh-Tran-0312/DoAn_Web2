@@ -1,27 +1,77 @@
 <?php
+# Kết nối với database
+require_once('./services/connectionSQL.php');
 
-$ProjectId = "";
+
+# Lấy thông tin mã user và vai trò (quản lý hay nhân viên) từ session
 $MaNhanVien = $_SESSION['nhanvien']['MaNhanVien'];
 $Role = $_SESSION['nhanvien']['Role'];
+$ProjectId = "";
 $TenProject = "";
 $DS_Tasks = [];
-require_once('./services/connectionSQL.php');
+
+
+# Lấy thông tin danh sách mã nhân viên nếu user là quản lý
+$DS_MaNhanVien = [];
+$MaPhongBan = $_SESSION['nhanvien']['MaPhongBan'];
+if($Role == 1) {
+  $sql= "SELECT `nhanvien`.`MaNhanVien`,`nhanvien`.`TenNhanVien`  from `nhanvien` WHERE `nhanvien`.`Role`='0' AND `nhanvien`.`MaPhongBan`='$MaPhongBan'";
+  $data = mysqli_query($connection, $sql);
+  $num_rows = mysqli_num_rows($data);
+  if($num_rows != 0) {
+    while($nv=mysqli_fetch_assoc($data)) {
+    array_push($DS_MaNhanVien, $nv);
+    }
+  }
+}
+# Lấy thông tin project id từ url
 if(isset($_REQUEST['projectId'])) {
   $ProjectId = $_REQUEST['projectId'];
 }
 
+
+# Form xử lý khi quản lý tạo task mới
+if(isset($_POST['submit'])) {
+  $TenCongViec = $_POST['title'];
+  $NoiDung = $_POST['description'];
+  $NgayTao = date("Y-m-d");
+  $Deadline = $_POST['deadline'];
+  $PhuTrach = $_POST['staff'];
+  $Status = $_POST['status'];
+
+  $sql = "INSERT INTO `congviec`(`TenCongViec`, `NoiDung`, `NgayTao`, `Deadline` ,`PhuTrach`,`Status`,`MaProject`,`MaQuanLy`) VALUES ('$TenCongViec','$NoiDung','$NgayTao','$Deadline','$PhuTrach','$Status', '$ProjectId','$MaNhanVien')";
+
+  if(mysqli_query($connection, $sql) == true) {
+    echo "SThanh cong";
+  } else {
+    echo "FThat Bai";
+  };
+
+}
+
+
+# Nếu user là quản lý thì lấy danh sách tất cả công việc trong project
 if($Role == 1) {
   $sql = "SELECT `project`.`TenProject`,`congviec`.`MaCongViec`, `congviec`.`TenCongViec`, `congviec`.`NgayTao`,`congviec`.`Deadline`, `congviec`.`Status`, `nhanvien`.`TenNhanVien`  FROM `congviec` JOIN `nhanvien` ON `congviec`.`PhuTrach`=`nhanvien`.`MaNhanVien` JOIN `project` ON `congviec`.`MaProject`=`project`.`MaProject` WHERE `congviec`.`MaProject`='$ProjectId'";  
   $data = mysqli_query($connection, $sql);
   $num_rows = mysqli_num_rows($data);
   if($num_rows != 0) {
       while($task=mysqli_fetch_assoc($data)) {
-          $TenProject = $task['TenProject'];
           array_push($DS_Tasks, $task);
       }
   }
 
+# Lấy lại thông tin tên project
+$sql = "SELECT `project`.`TenProject` FROM `project`  WHERE `project`.`MaProject`='$ProjectId'";
+  $data = mysqli_query($connection, $sql);
+  $num_rows = mysqli_num_rows($data);
+  if($num_rows != 0) {
+      while($task=mysqli_fetch_assoc($data)) {
+        $TenProject = $task['TenProject'];
+      }
+  }
 
+# Nếu user là nhân viên thì lấy danh sách tất cả công việc trong project mà nhân viên đó tham gia
 } else {
   $sql = "SELECT `project`.`TenProject`,`congviec`.`MaCongViec`, `congviec`.`TenCongViec`, `congviec`.`NgayTao`,`congviec`.`Deadline`, `congviec`.`Status`, `nhanvien`.`TenNhanVien`  FROM `congviec` JOIN `nhanvien` ON `congviec`.`MaQuanLy`=`nhanvien`.`MaNhanVien` JOIN `project` ON `congviec`.`MaProject`=`project`.`MaProject` WHERE `congviec`.`MaProject`='$ProjectId' AND `congviec`.`PhuTrach`='$MaNhanVien'";
   $data = mysqli_query($connection, $sql);
@@ -54,70 +104,56 @@ if($Role == 1) {
 
                 </div>
 <!-- Add Task Modal -->
-<div id="id01" class="w3-modal">
-  <div class="w3-modal-content">
-    <div class="w3-container">
-      <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+<div id="id01" class="w3-modal-task">
+  <div class="w3-modal-content-task">
+    <div class="w3-container-task">
+      <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-display-topright-task">&times;</span>
       
-      <form action="" method="post" class="form-modal" >
+      <form action="./index?page=task&projectId=<?php echo $ProjectId?>" method="post" class="form-modal-task" >
         <h3>Add  New Task</h3>
-        <div class="form-modal-group-container">
-          <div class="form-modal-group">
-            <div class="form-modal-control">
+        <div class="form-modal-group-container-task">
+          <div class="form-modal-group-task">
+            <div class="form-modal-control-task">
               <p>Task Title </p>
               <input type="text" name="title" />
             </div>
-            <div class="form-modal-control">
+            <div class="form-modal-control-task">
               <p>Description</p>
               <textarea cols="20" row="20" name="description"></textarea>
             </div>
-            <div class="form-modal-control">
+            <div class="form-modal-control-task">
               <p>Status</p>
                <select name="status">
-                 <option value="OPEN">NEW ISSUE</option>
-                 <option value="INPROGRESS">IN PROGRESS</option>
-                 <option value="COMPLETED">COMPLETED</option>
-                 <option value="CLOSED">CLOSED</option>
-                 <option value="CANCELED">CANCELED</option>
+                 <option value="NEW ISSUE" selected>NEW ISSUE</option>
                </select>
             </div>
            </div>
-           <div class="form-modal-group">
+           <div class="form-modal-group-task">
      
-            <div class="form-modal-control">
+            <div class="form-modal-control-task">
               <p>Responsible</p>
-               <select name="staff[]" multiple class="select-staff">
-                 <option value="staff_id">Lê Văn Tám</option>
-                 <option value="staff_id">Trịnh Văn Cấn</option>
-                 <option value="staff_id">Bùi Thị Xuân</option>
-                 <option value="staff_id">Hà Huy Giáp</option>
-                 <option value="staff_id">Lê Quang Định</option>
-                 <option value="staff_id">Nguyễn Ảnh Thủ</option>
-                 <option value="staff_id">Lê Văn Tám</option>
-                 <option value="staff_id">Trịnh Văn Cấn</option>
-                 <option value="staff_id">Bùi Thị Xuân</option>
-                 <option value="staff_id">Hà Huy Giáp</option>
-                 <option value="staff_id">Lê Quang Định</option>
-                 <option value="staff_id">Nguyễn Ảnh Thủ</option>
+               <select name="staff" class="select-staff">
+                 <?php 
+                     foreach($DS_MaNhanVien as $NV) {
+                       $TenNV = $NV['TenNhanVien'];
+                       $MaNV = $NV['MaNhanVien'];
+                       echo "<option value='$MaNV'>$TenNV</option>";
+                     }               
+                 ?>
                </select>
             </div>
-            <div class="form-modal-control">
+            <div class="form-modal-control-task">
               <p>Deadline</p>
               <input type="text" name="deadline" />
             </div>                        
            </div>
-        </div>     
-    
-        <button class="btn btn-outline-primary btn-sm mb-0" type="submit" onclick="document.getElementById('id01').style.display='none'">ADD</button>
-     
+        </div>        
+        <button class="btn btn-outline-primary btn-sm mb-0" type="submit" name="submit" onclick="document.getElementById('id01').style.display='none'">ADD</button>   
       </form>
     </div>
   </div>
 </div>
 <!-- //Add Task Modal -->
-
-                  
-
             <div class="card-body px-0 pt-2 pb-2">
               <div class="table-responsive p-0">
                 <table class="table align-items-center justify-content-center mb-0">

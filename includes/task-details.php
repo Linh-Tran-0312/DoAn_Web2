@@ -1,6 +1,7 @@
 <?php 
-
- 
+# Kết nối database
+require_once('./services/connectionSQL.php');
+# Lấy thông tin nhân viên, phòng ban và vai trò từ session
  $MaNhanVien = $_SESSION['nhanvien']['MaNhanVien'];
  $PhongBan = $_SESSION['nhanvien']['TenPhongBan'];
  $Role = $_SESSION['nhanvien']['Role'];
@@ -12,10 +13,21 @@
  $QL = "";
  $NV = "";
 
-require_once('./services/connectionSQL.php');
+#Lấy thông tin chi tiết công việc từ database dựa vào mã công việc
 if(isset($_REQUEST['taskId'])) {
   $taskId = $_REQUEST['taskId'];
 }
+
+#  Form xử lý user update trạng thái công việc
+if(isset($_POST['submit'])) {
+
+  $newStatus = $_POST['status'];  
+  $sql = "UPDATE `congviec` SET `Status`='$newStatus' WHERE `MaCongViec`='$taskId'";
+  
+  mysqli_query($connection, $sql);
+
+}
+
 $sql = "SELECT `project`.`TenProject`, `congviec`.`TenCongViec`, `congviec`.`Status`, `congviec`.`NoiDung`, `QL`.`TenNhanVien` AS `TenQL`, `NV`.`TenNhanVien` AS `TenNV` FROM `congviec` JOIN `project` ON `congviec`.`MaProject`=`project`.`MaProject` JOIN `nhanvien` AS `QL` ON `QL`.`MaNhanVien`=`congviec`.`MaQuanLy` JOIN `nhanvien` AS `NV` ON `congviec`.`PhuTrach` = `NV`.`MaNhanVien` WHERE `congviec`.`MaCongViec`='$taskId'";
 $data = mysqli_query($connection, $sql);
 $num_rows = mysqli_num_rows($data);
@@ -30,7 +42,7 @@ if($num_rows != 0) {
         $NV = $task['TenNV'];
     }
 }  
-
+# Dựa vào tình trạng công việc và vị trí hiển thị thanh trạng thái công việc và lời nhắn khác nhau
 $Status_Button = "";
 $Status_Message_QL = "";
 $Status_Message_NV = "";
@@ -38,7 +50,7 @@ switch($Status) {
   case "NEW ISSUE":
     $Status_Button =  "<button class='btn btn-secondary mx-1' onclick='document.getElementById(\"id01\").style.display=\"block\"'>NEW ISSUE</button>";
     $Status_Message_QL = "Đang chờ nhân viên của bạn phản hồi.";
-    $Status_Message_NV = "Quản lý của bạn vừa giao cho bạn nhiệm vụ mới, hãy phản hồi để quản lý biết.";
+    $Status_Message_NV = "Quản lý của bạn vừa giao cho bạn nhiệm vụ mới, hãy phản hồi để quản lý biết nhé.";
     break;
   case "IN PROGRESS":
     $Status_Button = "<div class='btn btn-warning mx-1' onclick='document.getElementById(\"id01\").style.display=\"block\"'>IN PROGRESS</div>";
@@ -50,8 +62,8 @@ switch($Status) {
     $Status_Message_QL = "Nhân viên của bạn đã hoàn thành nhiệm vụ này";
     $Status_Message_NV = "Bạn đã hoàn thành nhiệm vụ này";
     break;
-  case "WAITING ACCEPT":
-    $Status_Button =  "<div class='btn btn-info mx-1' onclick='document.getElementById(\"id01\").style.display=\"block\"'>WAITING ACCEPT</div>";
+  case "IN REVIEW":
+    $Status_Button =  "<div class='btn btn-info mx-1' onclick='document.getElementById(\"id01\").style.display=\"block\"'>IN REVIEW</div>";
     $Status_Message_QL = "Nhân viên bạn đã hoàn thành và đang chờ bạn duyệt hoàn thành.";
     $Status_Message_NV = "Hãy chờ quản lý của bạn duyệt hoàn thành nhiệm vụ nhé.";
     break;
@@ -91,8 +103,8 @@ switch($Status) {
 
                     echo "
                         <p class='mb-1 pt-2 text-bold'>Phòng $PhongBan</p>
-                        <h2 class='font-weight-bolder'>Dự Án: $TenProject</h2>
-                        <h4 class='font-weight-bolder'>Công Việc: $TenCongViec</h4>
+                        <h2 class='font-weight-bolder' style='color: blueviolet'>Dự Án: $TenProject</h2>
+                        <h5 class='font-weight-bolder'>Công Việc: $TenCongViec</h5>
                         <p class='mb-5'>$NoiDung</p>
                         <h6 class='font-weight-bolder'>Phụ trách thực hiện: $NV</h6>
                         
@@ -114,17 +126,12 @@ switch($Status) {
                     <div class="w3-modal-content-details">
                       <div class="w3-container-details">
                         <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-display-topright-details">&times;</span>
-                      <form class="form-modal-details">
+                      <form action="./index?page=task-details&taskId=<?php echo $taskId ?>" method="post"class="form-modal-details">
                        <h3>Update your task status</h3> 
                         <select name="status" class="my-2">
-                          <option value="OPEN">NEW ISSUE</option>
-                          <option value="INPROGRESS">IN PROGRESS</option>
-                          <option value="COMPLETED">COMPLETED</option>
-                          <option value="SUBMIT">SUBMIT COMPLETION</option>
-                          <option value="CLOSED">CLOSED</option>
-                          <option value="CANCELED">CANCELED</option>
+                           <?php include('UpdateTaskSelect.php') ?>
                         </select>
-                        <button class="btn btn-outline-primary btn-sm my-3" type="submit" onclick="document.getElementById('id01').style.display='none'">Apply</button>
+                        <button class="btn btn-outline-primary btn-sm my-3" type="submit" name="submit" onclick="document.getElementById('id01').style.display='none'">Apply</button>
 
                       </form>
                       </div>

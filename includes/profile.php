@@ -1,38 +1,33 @@
 <?php 
 
+# Kết nối database
+require_once('./services/connectionSQL.php');
+
+# Lấy thông tin profile lưu từ session
 $ID = $_SESSION['nhanvien']['MaNhanVien'];
 $Role= $_SESSION['nhanvien']['Role'];
-var_dump($Role);
 $TenNhanvien = $_SESSION['nhanvien']['TenNhanVien'];
 $ChucDanh = $_SESSION['nhanvien']['ChucDanh'];
+$CongViec = $_SESSION['nhanvien']['CongViec'];
 $SoDienThoai = $_SESSION['nhanvien']['SoDienThoai'];
 $PhongBan = $_SESSION['nhanvien']['TenPhongBan'];
 $MaPhongBan = $_SESSION['nhanvien']['MaPhongBan'];
 $DiaChi = $_SESSION['nhanvien']['DiaChi'];
 $Email = $_SESSION['nhanvien']['Email'];
 $DS_NhanVien = [];
+
+# Kết nôi với database để lấy thông tin danh sách nhân viên nếu user là quản lý
 if($_SESSION['nhanvien']['Role'] == 1) {
-
-require_once('./services/connectionSQL.php');
-
-$sql= "SELECT `nhanvien`.`TenNhanVien`, `nhanvien`.`ChucDanh` from `nhanvien` WHERE `nhanvien`.`Role`='0' AND `nhanvien`.`MaPhongBan`='$MaPhongBan'";
-$data = mysqli_query($connection, $sql);
-$num_rows = mysqli_num_rows($data);
-if($num_rows != 0) {
-  while($nv=mysqli_fetch_assoc($data)) {
-   array_push($DS_NhanVien, $nv);
+  $sql= "SELECT `nhanvien`.`TenNhanVien`, `nhanvien`.`ChucDanh` from `nhanvien` WHERE `nhanvien`.`Role`='0' AND `nhanvien`.`MaPhongBan`='$MaPhongBan'";
+  $data = mysqli_query($connection, $sql);
+  $num_rows = mysqli_num_rows($data);
+  if($num_rows != 0) {
+    while($nv=mysqli_fetch_assoc($data)) {
+    array_push($DS_NhanVien, $nv);
+    }
   }
 }
-}
-
-
-
-
-
 ?>
-
-
-
 
 <div class="container-fluid">
       <div class="page-header min-height-300 border-radius-xl mt-4" style="background-image: url('./assets/img/curved-images/curved0.jpg'); background-position-y: 50%;">
@@ -62,14 +57,13 @@ if($num_rows != 0) {
       </div>
     </div>
     <div class="container-fluid py-4">
-      <div class="row">
- 
+      <div class="row"> 
         <div class="col-12 col-xl-8">
           <div class="card h-100">
             <div class="card-header pb-0 p-3">
               <div class="row">
                 <div class="col-md-8 d-flex align-items-center">
-                  <h6 class="mb-0">Profile Information</h6>
+                  <h6 class="mb-0">Nhiệm vụ chính</h6>
                 </div>
                 <div class="col-md-4 text-right">
                   <a href="javascript:;">
@@ -80,7 +74,7 @@ if($num_rows != 0) {
             </div>
             <div class="card-body p-3">
               <p class="text-sm">
-                Hi, I’m Alec Thompson, Decisions: If you can’t decide, the answer is no. If two equally difficult paths, choose the one more painful in the short term (pain avoidance is creating an illusion of equality).
+                <?php echo $CongViec?>
               </p>
               <hr class="horizontal gray-light my-4">
               <ul class="list-group">

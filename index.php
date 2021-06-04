@@ -38,12 +38,16 @@ $page = "";
             $content =  ob_get_clean();
             break;
     }
- 
-
+   
     $html = file_get_contents('./layouts/GD2.html');
     $html = str_replace("<<$page>>", 'active', $html);
     $html = str_replace('<<pos_page_name>>', $page, $html);
     $html = str_replace('<<pos_page_content>>', $content, $html);
+    $UserName = "";
+    if(isset($_SESSION['nhanvien']['TenNhanVien'])) {
+        $UserName = $_SESSION['nhanvien']['TenNhanVien'];
+        $html = str_replace('<<pos_user_name>>', $UserName, $html);
+    }
     print $html;
 }
   

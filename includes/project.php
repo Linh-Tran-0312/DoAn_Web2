@@ -1,11 +1,26 @@
 <?php 
 
+# Kết nối với database
 require_once('./services/connectionSQL.php');
 
 $Role = $_SESSION['nhanvien']['Role'];
 $MaNhanVien = $_SESSION['nhanvien']['MaNhanVien'];
+
+ #Form xử lý khi quản lý tạo project mới
+ if(isset($_POST['submit'])) {
+
+    $Project_Name = $_POST['project_name'];
+    $Project_Summary = $_POST['project_summary'];
+    $Project_Status = $_POST['status'];
+
+    $sql = "INSERT INTO `project`( `MaQuanLy`, `TenProject`, `Summary`, `Status`) VALUES ('$MaNhanVien','$Project_Name','$Project_Summary','$Project_Status')";
+    
+    mysqli_query($connection, $sql);
+}
+
 $DS_Project = [];
 
+# Nếu user là quản lý thì lấy thông tin tất cả project user quản lý
 if($Role == 1) {
 $sql="SELECT `project`.`TenProject`,`project`.`MaProject`, `project`.`Summary`, `project`.`Status` FROM `project` WHERE `MaQuanLy`='$MaNhanVien'";
 $data = mysqli_query($connection, $sql);
@@ -15,10 +30,10 @@ if($num_rows != 0) {
         array_push($DS_Project, $project);
     }
 }
-
+# Nếu user là nhân viên thì lấy thông tin cả project mà nhân viên đó tham gia
 } else {
 
-    $sql = "SELECT `project`.`TenProject`,`project`.`MaProject`, `project`.`Summary`, `project`.`Status` FROM `project` JOIN `congviec` ON `project`.`MaProject`=`congviec`.`MaProject` JOIN `phancong` ON `phancong`.`MaCongViec`=`congviec`.`MaCongViec` WHERE `phancong` .`MaNhanVien`='$MaNhanVien' GROUP BY `project`.`TenProject`";
+    $sql = "SELECT `project`.`TenProject`,`project`.`MaProject`, `project`.`Summary`, `project`.`Status` FROM `project` JOIN `congviec` ON `project`.`MaProject`=`congviec`.`MaProject` WHERE `congviec`.`PhuTrach`='$MaNhanVien' GROUP BY `project`.`TenProject`";
     $data = mysqli_query($connection, $sql);
 $num_rows = mysqli_num_rows($data);
 if($num_rows != 0) {
@@ -28,7 +43,8 @@ if($num_rows != 0) {
 }
 }
 
- 
+
+
 
 
 ?>
@@ -61,11 +77,11 @@ if($num_rows != 0) {
                         <div class='card card-blog card-plain'>
                             <div class='position-relative'>
                                 <a class='d-block shadow-xl border-radius-xl'>
-                                    <img src='./assets/img/home-decor-3.jpg' alt='img-blur-shadow'
+                                    <img src='./assets/img/project-img.jpg' alt='img-blur-shadow'
                                         class='img-fluid shadow border-radius-xl'>
                                 </a>
                             </div>
-                            <div class='card-body px-1 pb-0'>
+                            <div class='card-body px-1 pb-0' style='height: 100%;display: flex; flex-direction: column-reverse; justify-content:space-between'>
                                 <div>
                                     <p class='text-gradient text-dark mb-2 text-sm'>Project #$num</p>
                                     <a href='javascript:;'>
@@ -109,25 +125,24 @@ if($num_rows != 0) {
                 <div class="w3-container">
                   <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-display-topright">&times;</span>
                  
-                  <form action="" method="post" class="form-modal">
+                  <form action="./index?page=project" method="post" class="form-modal">
                     <h3>Create New Project</h3>
                     <div class="form-modal-control">
                       <p>Project Title </p>
-                      <input type="text" name="project_name" />
+                      <input type="text" name="project_name" required/>
                     </div>
                     <div class="form-modal-control">
                       <p>Summary </p>
-                      <textarea cols="20" row="20" name="project_summary"></textarea>
+                      <textarea cols="20" row="20" name="project_summary" required></textarea>
                     </div>
                     <div class="form-modal-control">
                       <p>Status</p>
                        <select name="status">
-                         <option value="OPENING" selected>OPENING</option>
-                        
+                         <option value="OPENING" selected>OPENING</option>                       
                        </select>
                     </div>
                     <div class="form-modal-control text-align-center  " >
-                      <button class="btn btn-outline-primary btn-sm mb-0" type="submit" onclick="document.getElementById('id01').style.display='none'">Create</button>
+                      <button class="btn btn-outline-primary btn-sm mb-0" name="submit" type="submit" onclick="document.getElementById('id01').style.display='none'">Create</button>
                     </div>
                                        
                   </form>

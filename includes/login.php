@@ -1,8 +1,9 @@
 <?php 
 
- 
+# Kết nối với database
 require_once('./services/connectionSQL.php');  
 
+# Khai báo biến lưu giữ giá trị của email, password đăng nhập và tin nhắn trong trương hợp login lỗi
 $email = "";
 $password = "";
 $message = "";
@@ -13,11 +14,11 @@ if(isset($_POST['password'])) {
 	$password = $_POST['password'];
 }
 
+# Form xử lý đăng nhâp
  if (isset($_POST['submit'])) {  
 $sql = "SELECT * from nhanvien where Email = '$email' and Password= '$password'";
 $data = mysqli_query($connection, $sql);
 $n = mysqli_num_rows($data);
-
 if($n == 0) {
   $message = "Email hoặc mật khẩu không chính xác vui lòng thử lại";
 } else {  
