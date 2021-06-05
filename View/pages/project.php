@@ -1,51 +1,33 @@
 <?php 
 
-# Kết nối với database
-require_once('./services/connectionSQL.php');
+
+require_once('./services/project.php');
 
 $Role = $_SESSION['nhanvien']['Role'];
 $MaNhanVien = $_SESSION['nhanvien']['MaNhanVien'];
 
  #Form xử lý khi quản lý tạo project mới
  if(isset($_POST['submit'])) {
-
-    $Project_Name = $_POST['project_name'];
-    $Project_Summary = $_POST['project_summary'];
-    $Project_Status = $_POST['status'];
-
-    $sql = "INSERT INTO `project`( `MaQuanLy`, `TenProject`, `Summary`, `Status`) VALUES ('$MaNhanVien','$Project_Name','$Project_Summary','$Project_Status')";
-    
-    mysqli_query($connection, $sql);
-}
+    $project = array(
+        'name' => $_POST['project_name'],
+        'summary' => $_POST['project_summary'],
+        'status' => $_POST['status'],
+        'quanly' => $MaNhanVien
+    ); 
+    createProject($project);
+};
 
 $DS_Project = [];
 
-# Nếu user là quản lý thì lấy thông tin tất cả project user quản lý
+# Nếu user là quản lý thì lấy danh sách tất cả project mà user quản lý
 if($Role == 1) {
-$sql="SELECT `project`.`TenProject`,`project`.`MaProject`, `project`.`Summary`, `project`.`Status` FROM `project` WHERE `MaQuanLy`='$MaNhanVien'";
-$data = mysqli_query($connection, $sql);
-$num_rows = mysqli_num_rows($data);
-if($num_rows != 0) {
-    while($project=mysqli_fetch_assoc($data)) {
-        array_push($DS_Project, $project);
-    }
+    $DS_Project = getProjectListByManager($MaNhanVien);
+
+} 
+# Nếu user là nhân viên thì lấy danh sách tất cả project mà nhân viên đó tham gia
+else {
+    $DS_Project = getProjectListByStaff($MaNhanVien);
 }
-# Nếu user là nhân viên thì lấy thông tin cả project mà nhân viên đó tham gia
-} else {
-
-    $sql = "SELECT `project`.`TenProject`,`project`.`MaProject`, `project`.`Summary`, `project`.`Status` FROM `project` JOIN `congviec` ON `project`.`MaProject`=`congviec`.`MaProject` WHERE `congviec`.`PhuTrach`='$MaNhanVien' GROUP BY `project`.`TenProject`";
-    $data = mysqli_query($connection, $sql);
-$num_rows = mysqli_num_rows($data);
-if($num_rows != 0) {
-    while($project=mysqli_fetch_assoc($data)) {
-        array_push($DS_Project, $project);
-    }
-}
-}
-
-
-
-
 
 ?>
 

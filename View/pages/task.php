@@ -4,12 +4,16 @@ require_once('./services/connectionSQL.php');
 
 
 # Lấy thông tin mã user và vai trò (quản lý hay nhân viên) từ session
-$MaNhanVien = $_SESSION['nhanvien']['MaNhanVien'];
+$MaNhanVien = $_SESSION['userId'];
 $Role = $_SESSION['nhanvien']['Role'];
 $ProjectId = "";
 $TenProject = "";
 $DS_Tasks = [];
 
+# Lấy mã project từ url
+if(isset($_REQUEST['projectId'])) {
+  $ProjectId = $_REQUEST['projectId'];
+}
 
 # Lấy thông tin danh sách mã nhân viên nếu user là quản lý
 $DS_MaNhanVien = [];
@@ -24,10 +28,6 @@ if($Role == 1) {
     }
   }
 }
-# Lấy thông tin project id từ url
-if(isset($_REQUEST['projectId'])) {
-  $ProjectId = $_REQUEST['projectId'];
-}
 
 
 # Form xử lý khi quản lý tạo task mới
@@ -40,12 +40,6 @@ if(isset($_POST['submit'])) {
   $Status = $_POST['status'];
 
   $sql = "INSERT INTO `congviec`(`TenCongViec`, `NoiDung`, `NgayTao`, `Deadline` ,`PhuTrach`,`Status`,`MaProject`,`MaQuanLy`) VALUES ('$TenCongViec','$NoiDung','$NgayTao','$Deadline','$PhuTrach','$Status', '$ProjectId','$MaNhanVien')";
-
-  if(mysqli_query($connection, $sql) == true) {
-    echo "SThanh cong";
-  } else {
-    echo "FThat Bai";
-  };
 
 }
 

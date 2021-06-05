@@ -1,32 +1,33 @@
 <?php 
 
-# Kết nối database
-require_once('./services/connectionSQL.php');
+require_once('./services/user.php');
 
-# Lấy thông tin profile lưu từ session
-$ID = $_SESSION['nhanvien']['MaNhanVien'];
-$Role= $_SESSION['nhanvien']['Role'];
-$TenNhanvien = $_SESSION['nhanvien']['TenNhanVien'];
-$ChucDanh = $_SESSION['nhanvien']['ChucDanh'];
-$CongViec = $_SESSION['nhanvien']['CongViec'];
-$SoDienThoai = $_SESSION['nhanvien']['SoDienThoai'];
-$PhongBan = $_SESSION['nhanvien']['TenPhongBan'];
-$MaPhongBan = $_SESSION['nhanvien']['MaPhongBan'];
-$DiaChi = $_SESSION['nhanvien']['DiaChi'];
-$Email = $_SESSION['nhanvien']['Email'];
-$DS_NhanVien = [];
 
-# Kết nôi với database để lấy thông tin danh sách nhân viên nếu user là quản lý
-if($_SESSION['nhanvien']['Role'] == 1) {
-  $sql= "SELECT `nhanvien`.`TenNhanVien`, `nhanvien`.`ChucDanh` from `nhanvien` WHERE `nhanvien`.`Role`='0' AND `nhanvien`.`MaPhongBan`='$MaPhongBan'";
-  $data = mysqli_query($connection, $sql);
-  $num_rows = mysqli_num_rows($data);
-  if($num_rows != 0) {
-    while($nv=mysqli_fetch_assoc($data)) {
-    array_push($DS_NhanVien, $nv);
-    }
-  }
+# Lấy thông tin mã nhân viên  lưu từ session
+$ID = $_SESSION['userId'];
+
+
+# Gọi hàm lấy thông tin profile từ mã nhân viên
+$profile = getProfile($ID);
+$_SESSION['nhanvien'] = $profile;
+
+# Gán thông tin nhân viên nhân viên vào các biến
+$Role= $profile['Role'];
+$TenNhanvien = $profile['TenNhanVien'];
+$ChucDanh = $profile['ChucDanh'];
+$CongViec = $profile['CongViec'];
+$SoDienThoai = $profile['SoDienThoai'];
+$PhongBan = $profile['TenPhongBan'];
+$MaPhongBan = $profile['MaPhongBan'];
+$DiaChi = $profile['DiaChi'];
+$Email = $profile['Email'];
+
+# Lấy thông tin danh sách nhân viên nếu user là quản lý để hiển thị trong bản tạo công việc
+$StaffList = "";
+if($profile['Role'] == 1) {
+  $StaffList = getStaffList($MaPhongBan);
 }
+
 ?>
 
 <div class="container-fluid">
@@ -106,7 +107,7 @@ if($_SESSION['nhanvien']['Role'] == 1) {
             <div class="card-body p-3">
               <ul class="list-group">
               <?php
-              foreach($DS_NhanVien as $nv) {
+              foreach($StaffList as $nv) {
                 $TenNV = $nv['TenNhanVien'];
                 $CDanh = $nv['ChucDanh'];
                 echo "

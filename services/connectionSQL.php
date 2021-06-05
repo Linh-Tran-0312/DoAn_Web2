@@ -2,10 +2,10 @@
 
 $server = "localhost";
 $db = "daw2";
-$user = "root";
-$password = "123";
+$logname = "root";
+$logpass = "123";
 
-$connection = @mysqli_connect($server, $user, $password, $db);
+$connection = @mysqli_connect($server, $logname, $logpass, $db);
 
 if(!$connection) {
     die('Kết nói với cơ sở dữ liệu thất bại');
