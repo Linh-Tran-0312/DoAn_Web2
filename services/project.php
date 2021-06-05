@@ -42,4 +42,24 @@ function getProjectListByStaff($userId) {
     return $list;
 }
 
+function getProjectNameById($projectId) {
+    global $connection;
+    $Name = "";
+    $sql = "SELECT `project`.`TenProject` FROM `project`  WHERE `project`.`MaProject`='$projectId'";
+    $data = mysqli_query($connection, $sql);
+    $num_rows = mysqli_num_rows($data);
+    if($num_rows != 0) {
+        while($task=mysqli_fetch_assoc($data)) {
+            $Name = $task['TenProject'];
+        }
+    }
+  return $Name;
+}
+
+function updateProjectStatus($projectId, $status) {
+    global $connection;
+    $sql = "UPDATE `project` SET `Status`='$status' WHERE `MaProject`='$projectId'"; 
+    mysqli_query($connection, $sql);
+}
+
 ?>

@@ -1,82 +1,67 @@
 <?php
-# Kết nối với database
-require_once('./services/connectionSQL.php');
+
+require_once('./services/user.php');
+require_once('./services/task.php');
+require_once('./services/project.php');
 
 
 # Lấy thông tin mã user và vai trò (quản lý hay nhân viên) từ session
-$MaNhanVien = $_SESSION['userId'];
+$UserId = $_SESSION['userId'];
 $Role = $_SESSION['nhanvien']['Role'];
 $ProjectId = "";
-$TenProject = "";
-$DS_Tasks = [];
+$ProjectName = "";
+$TaskList = [];
 
-# Lấy mã project từ url
+# Lấy danh sách công việc tùy thuộc vào có hay không project ID
 if(isset($_REQUEST['projectId'])) {
   $ProjectId = $_REQUEST['projectId'];
+  # Lấy lại thông tin tên project
+  $ProjectName = getProjectNameById($ProjectId);
+  # Form xử lý khi quản lý tạo task mới
+  if(isset($_POST['submit'])) {
+    $task = array(
+      'title' => $_POST['title'],
+      'description' => $_POST['description'],
+      'createdAt' => date("Y-m-d"),
+      'deadline' => $_POST['deadline'],
+      'staff' => $_POST['staff'],
+      'status' => $_POST['status'],
+      'managerId' => $UserId,
+      'projectId' => $ProjectId
+    );
+
+    createTask($task);
+
+}
+
+
+}
+ # Nếu user là quản lý thì lấy danh sách tất cả công việc anh ấy quả lý 
+ if($Role == 1) {
+  $TaskList = getTaskListByManager($UserId,$ProjectId);
+
+ }
+# Nếu user là nhân viên thì lấy danh sách tất cả công việc trong project mà nhân viên đó tham gia
+else {
+  $TaskList = getTaskListByStaff($UserId, $ProjectId);
 }
 
 # Lấy thông tin danh sách mã nhân viên nếu user là quản lý
-$DS_MaNhanVien = [];
-$MaPhongBan = $_SESSION['nhanvien']['MaPhongBan'];
+$StaffList = [];
+$DepartmentId = $_SESSION['nhanvien']['MaPhongBan'];
 if($Role == 1) {
-  $sql= "SELECT `nhanvien`.`MaNhanVien`,`nhanvien`.`TenNhanVien`  from `nhanvien` WHERE `nhanvien`.`Role`='0' AND `nhanvien`.`MaPhongBan`='$MaPhongBan'";
-  $data = mysqli_query($connection, $sql);
-  $num_rows = mysqli_num_rows($data);
-  if($num_rows != 0) {
-    while($nv=mysqli_fetch_assoc($data)) {
-    array_push($DS_MaNhanVien, $nv);
+  $StaffList = getStaffList($DepartmentId);
+}
+if(isset($_POST['search'])) {
+  $term =  $_POST['term'];
+  $TempList = [];
+  foreach($TaskList as $task) {
+    $isMatch = preg_match("/$term/i", $task['TenCongViec']);
+    if($isMatch == 1) {
+      array_push($TempList,$task);
     }
   }
-}
-
-
-# Form xử lý khi quản lý tạo task mới
-if(isset($_POST['submit'])) {
-  $TenCongViec = $_POST['title'];
-  $NoiDung = $_POST['description'];
-  $NgayTao = date("Y-m-d");
-  $Deadline = $_POST['deadline'];
-  $PhuTrach = $_POST['staff'];
-  $Status = $_POST['status'];
-
-  $sql = "INSERT INTO `congviec`(`TenCongViec`, `NoiDung`, `NgayTao`, `Deadline` ,`PhuTrach`,`Status`,`MaProject`,`MaQuanLy`) VALUES ('$TenCongViec','$NoiDung','$NgayTao','$Deadline','$PhuTrach','$Status', '$ProjectId','$MaNhanVien')";
-
-}
-
-
-# Nếu user là quản lý thì lấy danh sách tất cả công việc trong project
-if($Role == 1) {
-  $sql = "SELECT `project`.`TenProject`,`congviec`.`MaCongViec`, `congviec`.`TenCongViec`, `congviec`.`NgayTao`,`congviec`.`Deadline`, `congviec`.`Status`, `nhanvien`.`TenNhanVien`  FROM `congviec` JOIN `nhanvien` ON `congviec`.`PhuTrach`=`nhanvien`.`MaNhanVien` JOIN `project` ON `congviec`.`MaProject`=`project`.`MaProject` WHERE `congviec`.`MaProject`='$ProjectId'";  
-  $data = mysqli_query($connection, $sql);
-  $num_rows = mysqli_num_rows($data);
-  if($num_rows != 0) {
-      while($task=mysqli_fetch_assoc($data)) {
-          array_push($DS_Tasks, $task);
-      }
-  }
-
-# Lấy lại thông tin tên project
-$sql = "SELECT `project`.`TenProject` FROM `project`  WHERE `project`.`MaProject`='$ProjectId'";
-  $data = mysqli_query($connection, $sql);
-  $num_rows = mysqli_num_rows($data);
-  if($num_rows != 0) {
-      while($task=mysqli_fetch_assoc($data)) {
-        $TenProject = $task['TenProject'];
-      }
-  }
-
-# Nếu user là nhân viên thì lấy danh sách tất cả công việc trong project mà nhân viên đó tham gia
-} else {
-  $sql = "SELECT `project`.`TenProject`,`congviec`.`MaCongViec`, `congviec`.`TenCongViec`, `congviec`.`NgayTao`,`congviec`.`Deadline`, `congviec`.`Status`, `nhanvien`.`TenNhanVien`  FROM `congviec` JOIN `nhanvien` ON `congviec`.`MaQuanLy`=`nhanvien`.`MaNhanVien` JOIN `project` ON `congviec`.`MaProject`=`project`.`MaProject` WHERE `congviec`.`MaProject`='$ProjectId' AND `congviec`.`PhuTrach`='$MaNhanVien'";
-  $data = mysqli_query($connection, $sql);
-  $num_rows = mysqli_num_rows($data);
-  if($num_rows != 0) {
-      while($task=mysqli_fetch_assoc($data)) {
-        $TenProject = $task['TenProject'];
-          array_push($DS_Tasks, $task);
-      }
-  }
-
+  $TaskList = $TempList;
 }
 
 
@@ -89,10 +74,16 @@ $sql = "SELECT `project`.`TenProject` FROM `project`  WHERE `project`.`MaProject
           <div class="card mb-4">
             <div class="row card-header pb-0">
                 <div class="col">
-                    <h5><?php echo $TenProject?></h5>
+                    <h5><?php if(isset($ProjectName)) { echo $ProjectName;} else { echo 'Tất cả công việc';}?></h5>
                     <h6>Task List</h6>
+                    <form role="form text-left" action="./index?page=task<?php if(isset($ProjectId)) {echo "&projectId=$ProjectId";}?>" method="post">
+                    <div class="input-group">
+                      <button class="input-group-text text-body" type="submit" name="search"><i class="fas fa-search" aria-hidden="true"></i></button>
+                      <input type="text" class="form-control" name="term" placeholder="Tìm kiếm công việc..." value="">
+                    </div>
+                   </form>
                 </div>
-                <div class="col text-right" style="<?php if($Role == 0) echo 'display: none'?>">
+                <div class="col text-right" style="<?php if($Role == 0 || !isset($_REQUEST['projectId'])) {echo 'display: none';}?>">
                     <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('id01').style.display='block'">Add new task</button>
                
 
@@ -126,9 +117,9 @@ $sql = "SELECT `project`.`TenProject` FROM `project`  WHERE `project`.`MaProject
      
             <div class="form-modal-control-task">
               <p>Responsible</p>
-               <select name="staff" class="select-staff">
+               <select name="staff" class="select-staff" required>
                  <?php 
-                     foreach($DS_MaNhanVien as $NV) {
+                     foreach($StaffList as $NV) {
                        $TenNV = $NV['TenNhanVien'];
                        $MaNV = $NV['MaNhanVien'];
                        echo "<option value='$MaNV'>$TenNV</option>";
@@ -164,7 +155,7 @@ $sql = "SELECT `project`.`TenProject` FROM `project`  WHERE `project`.`MaProject
                   </thead>
                   <tbody>
                     <?php
-                    foreach($DS_Tasks as $task) {
+                    foreach($TaskList as $task) {
                       $taskId = $task['MaCongViec'];
                       $name = $task['TenCongViec'];
                       $phutrach = $task['TenNhanVien'];

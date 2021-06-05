@@ -1,5 +1,5 @@
 <?php 
-# Kết nối database
+
 require_once('./services/user.php');
 $message ="";
 
@@ -17,7 +17,7 @@ $info = array(
   'department' => $_POST['department'],
   'role' => $_POST['role'],
   'position' =>  $_POST['position']
-)
+);
 
 if($Password != $ConfirmPassword) {
     $message = "Mật khẩu không trùng khớp. Vui lòng thử lại !";
@@ -40,10 +40,8 @@ if($Password != $ConfirmPassword) {
 
 
 
-
-
-<a href="./index?page=login" class="my-3 text-primary">Nếu bạn đã có tài khoản, đăng nhập tại đây !</a>
-<br/>
+                    <p style="color: red"><?php  echo $message?></p>
+                
 <br/>
 <form role="form text-left" action="./index?page=register" method="post">
                   <label>Họ và tên</label>
@@ -75,31 +73,17 @@ if($Password != $ConfirmPassword) {
                   <div class="mb-3">
                     <select type="text" name="role" class="form-control" placeholder="Department"    required>
                         <option value="0">Nhân Viên</option>
-                        <option value="1">Quản Lý</option>
-                        
-             
+                        <option value="1">Quản Lý</option>            
                     </select>
                   </div>
                   <label>Chức Danh</label>
                   <div class="mb-3">
                     <input type="text" name="position" class="form-control" placeholder="Position" aria-label="Email" aria-describedby="email-addon"  required>
                   </div>
-               <!--    <label>Địa chỉ</label>
-                  <div class="mb-3">
-                    <input type="text" name="address" class="form-control" placeholder="Address" aria-label="Email" aria-describedby="email-addon"  required>
-                  </div>
-                  <label>Số Điện Thoại</label>
-                  <div class="mb-3">
-                    <input type="text" name="phone" class="form-control" placeholder="Phone Number" aria-label="Email" aria-describedby="email-addon"  required>
-                  </div> -->
-               
-                  <div class="form-check form-switch">
-                    <p style="color: red"><?php  echo $message?></p>
-                  </div>
                   <div class="text-center">
                     <button type="submit" name="submit" class="btn bg-gradient-info w-100 mt-4 mb-0">Đăng Ký</button>
                   </div>
-
-
+                    <br/>
+                  <a href="./index?page=login" class="my-3 text-primary">Nếu bạn đã có tài khoản, đăng nhập tại đây !</a>
                                  
 </form>

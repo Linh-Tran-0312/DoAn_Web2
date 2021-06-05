@@ -1,19 +1,20 @@
 <?php 
 # Kết nối database
-require_once('./services/connectionSQL.php');
+require_once('./services/task.php');
+
 # Lấy thông tin nhân viên, phòng ban và vai trò từ session
- $MaNhanVien = $_SESSION['nhanvien']['MaNhanVien'];
- $PhongBan = $_SESSION['nhanvien']['TenPhongBan'];
+ $UserId = $_SESSION['nhanvien']['MaNhanVien'];
+ $Department = $_SESSION['nhanvien']['TenPhongBan'];
  $Role = $_SESSION['nhanvien']['Role'];
  $taskId = "";
- $TenProject = "";
- $TenCongViec = "";
+ $ProjectName = "";
+ $TaskTitle = "";
  $Status = "";
- $NoiDung = "";
- $QL = "";
- $NV = "";
+ $Description = "";
+ $ManagerName = "";
+ $StaffName = "";
 
-#Lấy thông tin chi tiết công việc từ database dựa vào mã công việc
+#Lấy mã công việc từ url
 if(isset($_REQUEST['taskId'])) {
   $taskId = $_REQUEST['taskId'];
 }
@@ -22,26 +23,20 @@ if(isset($_REQUEST['taskId'])) {
 if(isset($_POST['submit'])) {
 
   $newStatus = $_POST['status'];  
-  $sql = "UPDATE `congviec` SET `Status`='$newStatus' WHERE `MaCongViec`='$taskId'";
-  
-  mysqli_query($connection, $sql);
+   updateTaskStatus($taskId, $newStatus);
 
 }
+# Lấy thông tin chi tiết công việc từ mã công việc
 
-$sql = "SELECT `project`.`TenProject`, `congviec`.`TenCongViec`, `congviec`.`Status`, `congviec`.`NoiDung`, `QL`.`TenNhanVien` AS `TenQL`, `NV`.`TenNhanVien` AS `TenNV` FROM `congviec` JOIN `project` ON `congviec`.`MaProject`=`project`.`MaProject` JOIN `nhanvien` AS `QL` ON `QL`.`MaNhanVien`=`congviec`.`MaQuanLy` JOIN `nhanvien` AS `NV` ON `congviec`.`PhuTrach` = `NV`.`MaNhanVien` WHERE `congviec`.`MaCongViec`='$taskId'";
-$data = mysqli_query($connection, $sql);
-$num_rows = mysqli_num_rows($data);
-if($num_rows != 0) {
-    while($task=mysqli_fetch_assoc($data)) {
-      
-        $TenProject = $task['TenProject'];
-        $TenCongViec =$task['TenCongViec'];
-        $Status = $task['Status'];
-        $NoiDung =$task['NoiDung'];
-        $QL = $task['TenQL'];
-        $NV = $task['TenNV'];
-    }
-}  
+$Task = getTaskDetails($taskId);
+
+$ProjectName = $Task['TenProject'];
+$TaskTitle =$Task['TenCongViec'];
+$Status = $Task['Status'];
+$Description =$Task['NoiDung'];
+$ManagerName = $Task['TenQL'];
+$StaffName = $Task['TenNV'];
+
 # Dựa vào tình trạng công việc và vị trí hiển thị thanh trạng thái công việc và lời nhắn khác nhau
 $Status_Button = "";
 $Status_Message_QL = "";
@@ -102,13 +97,13 @@ switch($Status) {
                     <?php
 
                     echo "
-                        <p class='mb-1 pt-2 text-bold'>Phòng $PhongBan</p>
-                        <h2 class='font-weight-bolder' style='color: blueviolet'>Dự Án: $TenProject</h2>
-                        <h5 class='font-weight-bolder'>Công Việc: $TenCongViec</h5>
-                        <p class='mb-5'>$NoiDung</p>
-                        <h6 class='font-weight-bolder'>Phụ trách thực hiện: $NV</h6>
+                        <p class='mb-1 pt-2 text-bold'>Phòng $Department</p>
+                        <h2 class='font-weight-bolder' style='color: blueviolet'>Dự Án: $ProjectName</h2>
+                        <h5 class='font-weight-bolder'>Công Việc: $TaskTitle</h5>
+                        <p class='mb-5'>$Description</p>
+                        <h6 class='font-weight-bolder'>Phụ trách thực hiện: $StaffName</h6>
                         
-                        <h6 class='font-weight-bolder'>Phụ trách kiểm soát: $QL</h6>
+                        <h6 class='font-weight-bolder'>Phụ trách kiểm soát: $ManagerName</h6>
                         
                         <br/>  ";   
                   

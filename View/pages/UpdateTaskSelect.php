@@ -23,11 +23,11 @@ if($Role == 1) {
      # Nếu tình trạng công việc là COMPLETED thì bạn có thể đóng công việc này lại hoặc hủy
     case "COMPLETED":
         echo "  <option value='COMPLETED' disabled>COMPLETED</option>
-                <option value='CANCELED'>CANCELED</option>";
+                <option value='CLOSED'>CLOSED</option>";
         break;
     # Nếu tình trạng là CLOSED thì bạn có thể giữ nguyên hoặc hủy công việc
     case "CLOSED":
-        echo "  <option value='CLOSED' disabled>COMPLETED</option>
+        echo "  <option value='CLOSED' disabled>CLOSED</option>
                 <option value='CANCELED'>CANCELED</option>";
         break;
     default :

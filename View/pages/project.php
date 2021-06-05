@@ -1,6 +1,5 @@
 <?php 
 
-
 require_once('./services/project.php');
 
 $Role = $_SESSION['nhanvien']['Role'];
@@ -15,6 +14,11 @@ $MaNhanVien = $_SESSION['nhanvien']['MaNhanVien'];
         'quanly' => $MaNhanVien
     ); 
     createProject($project);
+};
+# Form xử lý khi quản lý thay đổi trạng thái của dự án
+if(isset($_POST['submitStatus'])) {
+    
+    updateProjectStatus($_POST['projectId'], $_POST['status']);
 };
 
 $DS_Project = [];
@@ -38,8 +42,8 @@ else {
         <div class="col-12 mt-4">
             <div class="card mb-4">
                 <div class="card-header pb-0 p-3">
-                    <h6 class="mb-1">Projects</h6>
-                    <p class="text-sm">Danh sách dự mà bạn đang tham gia hoặc quản lý</p>
+
+                    <h6 class="mb-1">Danh sách các dự án</h6>                  
                 </div>
                 <div class="card-body p-3">
                     <div class="row">
@@ -47,12 +51,16 @@ else {
                       $num = 1;
                       foreach($DS_Project as $project) {
                           $ProjectId = $project['MaProject'];
-                          $Ten = $project['TenProject'];
+                          $ProjectName = $project['TenProject'];
                           $Summary = $project['Summary'];
+                          $Status = $project['Status'];
+                          $Status_Change = '';
                           if($project['Status'] === "OPENING") {
-                              $Status = "<div class='btn btn-success py-2 mt-3'>OPENING</div>";
+                            $Status_Change = 'CLOSED';
+                              $Status_Button = "<button class='btn btn-success py-2 mt-3' type='submit' name='submitStatus'>OPENING</button>";
                           } else {
-                            $Status = "<div class='btn btn-primary py-2 mt-3'>CLOSED</div>";
+                            $Status_Change = 'OPENING';
+                            $Status_Button = "<button class='btn btn-primary py-2 mt-3'type='submit' name='submitStatus'>CLOSED</button>";
                           }
                           echo "
                         <div class='col-xl-3 col-md-4 mb-xl-0 mb-4'>
@@ -68,7 +76,7 @@ else {
                                     <p class='text-gradient text-dark mb-2 text-sm'>Project #$num</p>
                                     <a href='javascript:;'>
                                         <h5>
-                                        $Ten
+                                        $ProjectName
                                         </h5>
                                     </a>
                                     <p class='mb-4 text-sm'>
@@ -79,7 +87,12 @@ else {
                                     <a href='./index?page=task&projectId=$ProjectId' >
                                         <button type='submit' class='btn btn-outline-primary btn-sm mb-0'>View Project</button>
                                     </a> 
-                                      $Status                                                                            
+                                    <form action='./index?page=project' method='post'>
+                                    <input type='hidden' name='status' value='$Status_Change'>
+                                    <input type='hidden' name='projectId' value='$ProjectId'>
+                                    $Status_Button      
+                                    </form>
+                                                                                                           
                                 </div>
                             </div>
                         </div>

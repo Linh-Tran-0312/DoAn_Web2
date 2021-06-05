@@ -151,6 +151,11 @@
      <<pos_page_content>>
   </div>
   <!--   Core JS Files   -->
+  <script>
+    if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+    }
+</script>
   <script src="./assets/js/core/popper.min.js"></script>
   <script src="./assets/js/core/bootstrap.min.js"></script>
   <script src="./assets/js/plugins/smooth-scrollbar.min.js"></script>

@@ -37,7 +37,7 @@ function Register($info) {
     $Role = $info['role'];
     $FullName = $info['name'];
     $Position = $info['position'];
-    $Department = $info['department']
+    $Department = $info['department'];
 
 
     $sql = "SELECT `nhanvien`.`Email` FROM `nhanvien` WHERE `nhanvien`.`Email`='$Email'";
@@ -59,7 +59,7 @@ function Register($info) {
                         'user' => $user,
                         'message' => $message
                     );
-                    return $result
+                    return $result;
                 }
             }
 
@@ -70,7 +70,7 @@ function Register($info) {
                 'user' => $user,
                 'message' => $message
             );
-            return $result
+            return $result;
         }
     } else {
         $message = "Email này đã được sử dụng, vui lòng thử lại với email khác !";
@@ -78,7 +78,7 @@ function Register($info) {
             'user' => $user,
             'message' => $message
         );
-        return $result
+        return $result;
     }
     
 }
@@ -99,7 +99,7 @@ function getProfile($userId) {
 function getStaffList($departmentId) {
     global $connection;
     $list = [];
-    $sql= "SELECT `nhanvien`.`TenNhanVien`, `nhanvien`.`ChucDanh` from `nhanvien` WHERE `nhanvien`.`Role`='0' AND `nhanvien`.`MaPhongBan`='$departmentId'";
+    $sql= "SELECT `nhanvien`.`TenNhanVien`, `nhanvien`.`ChucDanh`,`nhanvien`.`MaNhanVien` from `nhanvien` WHERE `nhanvien`.`Role`='0' AND `nhanvien`.`MaPhongBan`='$departmentId'";
     $data = mysqli_query($connection, $sql);
     $num_rows = mysqli_num_rows($data);
     if($num_rows != 0) {
