@@ -15,10 +15,10 @@
 	margin: auto;
 	background-color: #fff;
 	position: relative;
-	padding: 0;
+	padding: 15px;
 	outline: 0;
 	width: 400px;
-	height: 200px;
+ 
 	border-radius: 10px;
 }
 .w3-display-right-details {
@@ -58,10 +58,10 @@
 .form-modal-details {
 	display: flex;
 	flex-direction: column;
-	justify-content: center;
-	align-items: center;
+	justify-content: flex-start;
+	align-items: flex-start;
 	width: 100%;
-	height: 200px;
+	 
 }
 .form-modal-details select {
 	border: 1px solid gray;

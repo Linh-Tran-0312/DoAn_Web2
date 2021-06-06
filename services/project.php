@@ -42,18 +42,18 @@ function getProjectListByStaff($userId) {
     return $list;
 }
 
-function getProjectNameById($projectId) {
+function getProjectDetails($projectId) {
     global $connection;
-    $Name = "";
-    $sql = "SELECT `project`.`TenProject` FROM `project`  WHERE `project`.`MaProject`='$projectId'";
+    $projectInfo = "";
+    $sql = "SELECT `project`.`TenProject`, `project`.`Summary`, `project`.`Status` FROM `project`  WHERE `project`.`MaProject`='$projectId'";
     $data = mysqli_query($connection, $sql);
     $num_rows = mysqli_num_rows($data);
     if($num_rows != 0) {
-        while($task=mysqli_fetch_assoc($data)) {
-            $Name = $task['TenProject'];
+        while($info=mysqli_fetch_assoc($data)) {
+            $projectInfo =$info;
         }
     }
-  return $Name;
+  return $projectInfo;
 }
 
 function updateProjectStatus($projectId, $status) {
@@ -62,4 +62,24 @@ function updateProjectStatus($projectId, $status) {
     mysqli_query($connection, $sql);
 }
 
+function deleteProject($projectId) {
+       global $connection;
+       
+       $sql = "DELETE FROM `congviec` WHERE `congviec`.`MaProject` = '$projectId'";
+       mysqli_query($connection, $sql);
+       $sql = "DELETE FROM `project` WHERE `project`.`MaProject` = '$projectId'";
+       mysqli_query($connection, $sql);
+     
+}
+
+function updateProject($project) {
+     global $connection;
+     $ProjectId = $project['id'];
+     $Project_Name = $project['name'];
+     $Project_Summary = $project['summary'];
+     $Project_Status = $project['status'];
+
+     $sql = "UPDATE `project` SET `TenProject`= '$Project_Name',`Summary`= '$Project_Summary',`Status`= '$Project_Status' WHERE `MaProject`='$ProjectId'";
+     mysqli_query($connection, $sql);
+}
 ?>

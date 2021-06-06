@@ -49,10 +49,27 @@ function createTask($task) {
     $sql = "INSERT INTO `congviec`(`TenCongViec`, `NoiDung`, `NgayTao`, `Deadline` ,`PhuTrach`,`Status`,`MaProject`,`MaQuanLy`) VALUES ('$Title','$Description','$CreatedAt','$Deadline','$Staff','$Status', '$ProjectId','$ManagerId')";
     mysqli_query($connection, $sql);
 }
+function updateTask($task) {
+    global $connection;
+    $taskId = $task['id'];
+    $taskTitle = $task['title'];
+    $taskDesc = $task['description'];
+    $taskDeadline = $task['deadline'];
+
+    $sql = "UPDATE `congviec` SET `TenCongViec`='$taskTitle', `NoiDung`='$taskDesc',`Deadline`='$taskDeadline' WHERE `MaCongViec`='$taskId'";
+    mysqli_query($connection,$sql);
+}
+
+function deleteTask($taskId) {
+    global $connection;
+
+    $sql = "DELETE FROM `congviec` WHERE `MaCongViec`='$taskId'";
+    mysqli_query($connection,$sql);
+}
 function getTaskDetails($taskId) {
     global $connection;
     $Details = [];
-    $sql = "SELECT `project`.`TenProject`, `congviec`.`TenCongViec`, `congviec`.`Status`, `congviec`.`NoiDung`, `QL`.`TenNhanVien` AS `TenQL`, `NV`.`TenNhanVien` AS `TenNV` FROM `congviec` JOIN `project` ON `congviec`.`MaProject`=`project`.`MaProject` JOIN `nhanvien` AS `QL` ON `QL`.`MaNhanVien`=`congviec`.`MaQuanLy` JOIN `nhanvien` AS `NV` ON `congviec`.`PhuTrach` = `NV`.`MaNhanVien` WHERE `congviec`.`MaCongViec`='$taskId'";
+    $sql = "SELECT `project`.`TenProject`,`project`.`MaProject`, `congviec`.`TenCongViec`, `congviec`.`Deadline`, `congviec`.`Status`, `congviec`.`NoiDung`, `QL`.`TenNhanVien` AS `TenQL`, `NV`.`TenNhanVien` AS `TenNV` FROM `congviec` JOIN `project` ON `congviec`.`MaProject`=`project`.`MaProject` JOIN `nhanvien` AS `QL` ON `QL`.`MaNhanVien`=`congviec`.`MaQuanLy` JOIN `nhanvien` AS `NV` ON `congviec`.`PhuTrach` = `NV`.`MaNhanVien` WHERE `congviec`.`MaCongViec`='$taskId'";
     $data = mysqli_query($connection, $sql);
     $num_rows = mysqli_num_rows($data);
     if($num_rows != 0) {

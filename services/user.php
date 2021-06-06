@@ -85,7 +85,7 @@ function Register($info) {
 function getProfile($userId) {
     global $connection;
     $profile = "";
-    $sql = "SELECT `n`.`MaNhanVien`, `n`.`Email`, `n`.`MaPhongBan`, `n`.`Role`, `n`.`TenNhanVien`, `n`.`CongViec`, `n`.`ChucDanh`, `n`.`DiaChi`, `n`.`SoDienThoai`, `p`.`TenPhongBan` FROM `nhanvien` AS `n` JOIN `phongban` AS `p` ON `n`.`MaPhongBan`=`p`.`MaPhongBan` WHERE `n`.`MaNhanVien`= '$userId'";
+    $sql = "SELECT `n`.`MaNhanVien`, `n`.`Hinh`,`n`.`Email`, `n`.`MaPhongBan`, `n`.`Role`, `n`.`TenNhanVien`, `n`.`CongViec`, `n`.`ChucDanh`, `n`.`DiaChi`, `n`.`SoDienThoai`, `p`.`TenPhongBan` FROM `nhanvien` AS `n` JOIN `phongban` AS `p` ON `n`.`MaPhongBan`=`p`.`MaPhongBan` WHERE `n`.`MaNhanVien`= '$userId'";
     $data = mysqli_query($connection, $sql);
     $num_rows = mysqli_num_rows($data);
     if($num_rows != 0) {
@@ -95,11 +95,32 @@ function getProfile($userId) {
     }
     return $profile;
 }
+function updateProfile($profile) {
+    global $connection;
+    $id = $profile['id'];
+    $name = $profile['name'];
+    $position = $profile['position'];
+    $description = $profile['job_description'];
+    $departmentId = $profile['department'];
+    $phone = $profile['phone'];
+    $email = $profile['email'];
+    $address = $profile['address'];
 
+    $sql = "UPDATE `nhanvien` SET `Email`= '$email', `MaPhongBan`='$departmentId',`TenNhanVien`='$name',`CongViec`= '$description',`ChucDanh`= '$position',`DiaChi`= '$address',`SoDienThoai`= '$phone' WHERE `MaNhanVien` = '$id'";
+    mysqli_query($connection, $sql);
+}
+
+function uploadAvatar($userId, $imageContent) {
+    global $connection;
+    $sql = "UPDATE `nhanvien` SET `Hinh`='$imageContent' WHERE `MaNhanVien`='$userId'";
+
+    mysqli_query($connection, $sql);
+
+}
 function getStaffList($departmentId) {
     global $connection;
     $list = [];
-    $sql= "SELECT `nhanvien`.`TenNhanVien`, `nhanvien`.`ChucDanh`,`nhanvien`.`MaNhanVien` from `nhanvien` WHERE `nhanvien`.`Role`='0' AND `nhanvien`.`MaPhongBan`='$departmentId'";
+    $sql= "SELECT `nhanvien`.`TenNhanVien`,`nhanvien`.`Hinh`, `nhanvien`.`ChucDanh`,`nhanvien`.`MaNhanVien` from `nhanvien` WHERE `nhanvien`.`Role`='0' AND `nhanvien`.`MaPhongBan`='$departmentId'";
     $data = mysqli_query($connection, $sql);
     $num_rows = mysqli_num_rows($data);
     if($num_rows != 0) {

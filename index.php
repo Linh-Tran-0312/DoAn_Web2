@@ -35,6 +35,11 @@ $page = "";
             include_once('./View/pages/project.php'); 
             $content =  ob_get_clean();
             break;
+        case 'project-details':
+            ob_start();
+            include_once('./View/pages/project-details.php'); 
+            $content =  ob_get_clean();
+            break;
         case 'task':
             ob_start();
             include_once('./View/pages/task.php'); 

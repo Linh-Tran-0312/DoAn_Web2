@@ -1,7 +1,7 @@
 <?php 
 if($Role == 1) {
  # Đối với quản lý
- switch($Status) {
+ switch($task_status) {
      # Nếu tình trạng công việc là NEW ISSUE thì chỉ có thể giữ nguyên chờ nhân viên phản hồi hoặc hủy công việc
      case 'NEW ISSUE':
         echo " <option value='NEW ISSUE' disabled>NEW ISSUE</option>
@@ -35,7 +35,7 @@ if($Role == 1) {
  }
 } else {
     # Đối với Nhân viên
-    switch($Status) {
+    switch($task_status) {
         # Nếu tình trạng là NEW ISSUE nghĩa là sếp bạn vừa giao việc và có thể để đó hoặc phản hồi đồng ý thực hiện để quản lý bạn biết và theo dõi
         case 'NEW ISSUE':
            echo " <option value='NEW ISSUE' disabled>NEW ISSUE</option>
