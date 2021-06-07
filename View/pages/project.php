@@ -1,5 +1,7 @@
 <?php 
-
+if(!isset($_SESSION['isLogin']) || $_SESSION['isLogin'] == false) {
+    header('Location: ../DAW2/index');
+  }
 require_once('./services/project.php');
 
 $Role = $_SESSION['nhanvien']['Role'];
@@ -14,11 +16,6 @@ $MaNhanVien = $_SESSION['nhanvien']['MaNhanVien'];
         'quanly' => $MaNhanVien
     ); 
     createProject($project);
-};
-# Form xử lý khi quản lý thay đổi trạng thái của dự án
-if(isset($_POST['submitStatus'])) {
-    
-    updateProjectStatus($_POST['projectId'], $_POST['status']);
 };
 
 $DS_Project = [];
@@ -87,11 +84,9 @@ else {
                                     <a href='./index?page=task&projectId=$ProjectId' >
                                         <button type='submit' class='btn btn-outline-primary btn-sm mb-0'>View Project</button>
                                     </a> 
-                                    <form action='./index?page=project' method='post'>
-                                    <input type='hidden' name='status' value='$Status_Change'>
-                                    <input type='hidden' name='projectId' value='$ProjectId'>
+                                
                                     $Status_Button      
-                                    </form>
+                                    
                                                                                                            
                                 </div>
                             </div>

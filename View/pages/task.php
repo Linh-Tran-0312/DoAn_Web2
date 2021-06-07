@@ -1,4 +1,7 @@
 <?php
+if(!isset($_SESSION['isLogin']) || $_SESSION['isLogin'] == false) {
+  header('Location: ../DAW2/index');
+}
 
 require_once('./services/user.php');
 require_once('./services/task.php');
@@ -172,7 +175,7 @@ if(isset($_POST['term'])) {
                         
                       }
                       $Status_View = "";
-                      include('./View/pages/Status_Btn_Msg.php');
+                      include('./View/includes/Status_Btn_Msg.php');
                       echo "
                       
                       <tr>

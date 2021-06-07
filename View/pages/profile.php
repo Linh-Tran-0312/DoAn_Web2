@@ -1,5 +1,9 @@
 <?php 
 
+if(!isset($_SESSION['isLogin']) || $_SESSION['isLogin'] == false) {
+  header('Location: ../DAW2/index');
+}
+
 require_once('./services/user.php');
 
 

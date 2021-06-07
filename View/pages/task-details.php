@@ -1,5 +1,8 @@
 <?php 
-# Kết nối database
+if(!isset($_SESSION['isLogin']) || $_SESSION['isLogin'] == false) {
+  header('Location: ../DAW2/index');
+}
+
 require_once('./services/task.php');
 
 # Lấy thông tin nhân viên, phòng ban và vai trò từ session
@@ -64,7 +67,7 @@ $Status_Button = "";
 $Status_Message_QL = "";
 $Status_Message_NV = "";
 
-include('./View/pages/Status_Btn_Msg.php');
+include('./View/includes/Status_Btn_Msg.php');
 
 ?>
 
@@ -91,9 +94,9 @@ include('./View/pages/Status_Btn_Msg.php');
                         <h2 class='font-weight-bolder'>$TaskTitle</h2>
                         "; ?>
                      
-                        <div style="<?php if($Role == 0 || !isset($_REQUEST['projectId'])) {echo 'display: none';}?>" >
-                        <button class='btn btn-outline-info' style='width: 130px' onclick='document.getElementById(\"id02\").style.display=\"block\"'>Edit</button>
-                        <button class='btn btn-outline-danger mx-3' style='width: 130px' onclick='document.getElementById(\"id03\").style.display=\"block\"'>Delete</button>
+                        <div style="<?php if($Role == 0 ) {echo 'display: none';}?>" >
+                          <button class='btn btn-outline-info' style='width: 130px' onclick="document.getElementById('id02').style.display='block'">Edit</button>
+                          <button class='btn btn-outline-danger mx-3' style='width: 130px' onclick="document.getElementById('id03').style.display='block'">Delete</button>
                         </div>
                         <?php echo "
                         <br/>
@@ -111,7 +114,7 @@ include('./View/pages/Status_Btn_Msg.php');
                       <?php echo $Status_Button; ?>
                      <h6 class="mx-3 my-1 text-primary"><?php if($Role == 0) { echo $Status_Message_NV;} else { echo $Status_Message_QL; }?></h6> 
                  </div>
- <!--   Modal for delete task details -->
+<!--   Modal for delete task details -->
            <div class="w3-container-details">           
                   <div id="id03" class="w3-modal-details">
                     <div class="w3-modal-content-details">
@@ -129,9 +132,9 @@ include('./View/pages/Status_Btn_Msg.php');
                     </div>
                   </div>
                 </div>
-    <!--   //Modal for delete task details -->  
+<!--   //Modal for delete task details -->  
 
-  <!--   Modal for updating task details -->
+<!--   Modal for updating task details -->
            <div class="w3-container-details">           
                   <div id="id02" class="w3-modal-details">
                     <div class="w3-modal-content-details">
@@ -164,7 +167,7 @@ include('./View/pages/Status_Btn_Msg.php');
                       <form action="./index?page=task-details&taskId=<?php echo $taskId ?>" method="post"class="form-modal-details">
                        <h3 class='text-primary'>Cập nhật tiến độ</h3> 
                         <select name="status" class="my-2 form-control">
-                           <?php include('UpdateTaskSelect.php') ?>
+                           <?php include('./View/includes/UpdateTaskSelect.php') ?>
                         </select>
                         <div style="width: 100%; text-align: center">
                         <button class="btn btn-outline-primary btn-sm my-3" type="submit" name="update_status" onclick="document.getElementById('id01').style.display='none'">Cập Nhật</button>

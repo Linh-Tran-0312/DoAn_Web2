@@ -1,24 +1,36 @@
 <?php 
 session_start();
-$_SESSION['isLogin'] = false;
+ 
+  #!isset($_REQUEST["page"]) || $_REQUEST["page"] == 'login' || $_REQUEST["page"] == 'register'
 $content = "";
 $page = "";
-	if (!isset($_REQUEST["page"]) || $_REQUEST["page"] == 'login' || $_REQUEST["page"] == 'register') {
+	if (!isset($_SESSION['isLogin']) || $_SESSION['isLogin'] == false || !isset($_REQUEST["page"])) {
 		# code...
         
-    if(!isset($_REQUEST["page"]) || $_REQUEST["page"] == 'login') {
-        ob_start();
-        include_once('./View/pages/login.php');
-        $content = ob_get_clean();         
-    }
-    else{
-           ob_start();
-            include_once('./View/pages/register.php');
-            $content = ob_get_clean();
-    }    
+        if(!isset($_REQUEST["page"]) || $_REQUEST["page"] == 'login') {
+            ob_start();
+            include_once('./View/pages/login.php');
+            $content = ob_get_clean();         
+        }
+        else{
+            $page = $_REQUEST["page"];
+            switch($page) {
+                case "register":
+                    ob_start();
+                    include_once('./View/pages/register.php');
+                    $content = ob_get_clean();
+                    break;
+                case 'team':
+                    ob_start();
+                    include_once('./View/pages/team.html');
+                    $content = ob_get_clean();
+                    break;
+            }
+            
+        }    
         $html = file_get_contents('./View/layouts/GD1.html');
         $html = str_replace('<<pos_page_content>>', $content, $html);
-        echo $html;
+        print $html;
 	}
      else {
         $page = $_REQUEST["page"];
