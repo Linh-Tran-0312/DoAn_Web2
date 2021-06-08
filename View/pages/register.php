@@ -5,7 +5,6 @@ $message ="";
 
 if(isset($_POST['submit'])) {
 
- 
 $Password = $_POST['password'];
 $ConfirmPassword = $_POST['confirm_password'];
  
@@ -21,12 +20,13 @@ $info = array(
 
 if($Password != $ConfirmPassword) {
     $message = "Mật khẩu không trùng khớp. Vui lòng thử lại !";
-} else {
-
+} 
+else {
   $result = Register($info);
   if($result['message'] == 'Successful') {
     $_SESSION['isLogin'] = true;
     $_SESSION['nhanvien'] = $result['user'];  
+    $_SESSION['userId'] = $result['user']['MaNhanVien'];  
     header('Location: ../DAW2/index.php?page=profile');
   } else {
     $message = $result['message'];
@@ -70,7 +70,7 @@ if($Password != $ConfirmPassword) {
                   <label>Phòng Ban</label>
                   <div class="mb-3">
                     <select type="text" name="department" class="form-control" placeholder="Department"    required>
-                        <option value="1">Nhân Sự</option>
+                        <option value="1" selected>Nhân Sự</option>
                         <option value="2">Marketing</option>
                         <option value="5">Kinh Doanh</option>
                         <option value="8">Kế Toán</option>
@@ -79,7 +79,7 @@ if($Password != $ConfirmPassword) {
                   <label>Cấp Bậc</label>
                   <div class="mb-3">
                     <select type="text" name="role" class="form-control" placeholder="Department"    required>
-                        <option value="0">Nhân Viên</option>
+                        <option value="0" selected>Nhân Viên</option>
                         <option value="1">Quản Lý</option>            
                     </select>
                   </div>

@@ -7,13 +7,22 @@ if(!isset($_SESSION['isLogin']) || $_SESSION['isLogin'] == false) {
 require_once('./services/user.php');
 
 
-# Lấy thông tin mã nhân viên  lưu từ session
+# Lấy thông tin mã nhân viên  lưu từ session và khai báo
 $ID = $_SESSION['userId'];
 
+$Role= '';
+$Name = '';
+$Avatar ='';
+$Position = '';
+$JobDescription = '';
+$Phone = '';
+$Department = '';
+$DepartmentId = '';
+$Address = '';
+$Email = '';
+$StaffList = "";
 # Form xử lý khi nhan viên update hình của họ
 if(isset($_FILES['image'])) {
-
-
 
   $image_base64 = base64_encode(file_get_contents($_FILES['image']['tmp_name']) );
   $image = 'data:image/jpg;base64,'.$image_base64;
@@ -41,25 +50,29 @@ if(isset($_POST['submit'])) {
 }
 # Gọi hàm lấy thông tin profile từ mã nhân viên
 $profile = getProfile($ID);
-$_SESSION['nhanvien'] = $profile;
+if($profile != '') {
+  $_SESSION['nhanvien'] = $profile;
 
-# Gán thông tin nhân viên nhân viên vào các biến
-$Role= $profile['Role'];
-$Name = $profile['TenNhanVien'];
-$Avatar = $profile['Hinh'];
-$Position = $profile['ChucDanh'];
-$JobDescription = $profile['CongViec'];
-$Phone = $profile['SoDienThoai'];
-$Department = $profile['TenPhongBan'];
-$DepartmentId = $profile['MaPhongBan'];
-$Address = $profile['DiaChi'];
-$Email = $profile['Email'];
+  # Gán thông tin nhân viên nhân viên vào các biến
+  $Role= $profile['Role'];
+  $Name = $profile['TenNhanVien'];
+  $Avatar = $profile['Hinh'];
+  $Position = $profile['ChucDanh'];
+  $JobDescription = $profile['CongViec'];
+  $Phone = $profile['SoDienThoai'];
+  $Department = $profile['TenPhongBan'];
+  $DepartmentId = $profile['MaPhongBan'];
+  $Address = $profile['DiaChi'];
+  $Email = $profile['Email'];
 
 # Lấy thông tin danh sách nhân viên nếu user là quản lý để hiển thị trong bản tạo công việc
-$StaffList = "";
 if($profile['Role'] == 1) {
   $StaffList = getStaffList($DepartmentId);
 }
+}
+
+
+
 
 ?>
 
@@ -105,6 +118,7 @@ if($profile['Role'] == 1) {
               <div class="row">
                 <div class="col-md-8 d-flex align-items-center">
                   <h6 class="mb-0">Mô tả công việc</h6>
+                  <?php var_dump($ID) ?>
                 </div>
                 <div class="col-md-4 text-right">
                   <a onclick="document.getElementById('id01').style.display='block'">

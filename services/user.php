@@ -30,8 +30,6 @@ function Register($info) {
     $message = "";
     $user = "";
     
-
-    #'$Department','$Role','$FullName','$Position'
     $Email = $info['email'];
     $Password = $info['password'];
     $Role = $info['role'];
@@ -39,33 +37,39 @@ function Register($info) {
     $Position = $info['position'];
     $Department = $info['department'];
 
-
     $sql = "SELECT `nhanvien`.`Email` FROM `nhanvien` WHERE `nhanvien`.`Email`='$Email'";
     $data = mysqli_query($connection, $sql);
     $num_rows = mysqli_num_rows($data);   
-    if($num_rows == 0) {
-       
+    if($num_rows == 0) {  
         $sql = "INSERT INTO `nhanvien`(`Email`, `Password`, `MaPhongBan`, `Role`, `TenNhanVien`, `ChucDanh` ) VALUES ('$Email','$Password', '$Department','$Role','$FullName','$Position')";
          $insert = mysqli_query($connection, $sql);
          if($insert == true) {
-            $sql = "SELECT * FROM `nhanvien` JOIN `phongban` ON `nhanvien`.`MaPhongBan` = `phongban`.`MaPhongBan` WHERE `nhanvien`.`Email` = '$Email'";
-            $data = mysqli_query($connection, $sql);
-            $num_rows = mysqli_num_rows($data);   
-            if($num_rows != 0) {
-                while($nhanvien=mysqli_fetch_assoc($data)) {                 
-                    $user = $nhanvien;  
-                    $message = "Successful";
-                    $result = array(
-                        'user' => $user,
-                        'message' => $message
-                    );
-                    return $result;
+            $sql = "SELECT * FROM `nhanvien` WHERE `nhanvien`.`Email` = '$Email'";
+            $data_nv = mysqli_query($connection, $sql);
+            $num_rows = mysqli_num_rows($data_nv);   
+            if($num_rows > 0) {
+                while($nhanvien=mysqli_fetch_assoc($data_nv)) {                 
+                    $user = $nhanvien;                   
                 }
+                $message = "Successful";
+                $result = array(
+                    'user' => $user,
+                    'message' => $message
+                );
+                return $result;
+            }
+            else {
+                $message = "Lỗi không thể tải thông tin người dùng !";
+                $result = array(
+                    'user' => $user,
+                    'message' => $message
+                );
+                return $result;
             }
 
          }
          else {
-            $message = "Đã có lỗi xảy ra. Vui lòng thử lại sau !";
+            $message = "Lỗi kết nối với cơ sở dữ liệu !";
             $result = array(
                 'user' => $user,
                 'message' => $message
@@ -91,8 +95,9 @@ function getProfile($userId) {
     if($num_rows != 0) {
     while($nhanvien=mysqli_fetch_assoc($data)) {
         $profile = $nhanvien;
-         }
+        }
     }
+
     return $profile;
 }
 function updateProfile($profile) {

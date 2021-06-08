@@ -49,11 +49,11 @@ $message = "";
                   <div class="mb-3">
                     <input type="password" name="password" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="password-addon">
                   </div>
-                  <div class="form-check form-switch">
+                  <div >
                     <p style="color: red"><?php  echo $message?></p>
                   </div>
                   <div class="text-center">
-                    <button type="submit" name="submit" class="btn bg-gradient-info w-100 mt-4 mb-0">Sign in</button>
+                    <button type="submit" name="submit" class="btn bg-gradient-info w-100 mt-4 mb-0">Đăng Nhập</button>
                   </div>
                   <br/>
                   <a href="./index?page=register" class="my-3 text-primary">Nếu bạn là nhân viên mới, tạo tài khoản tại đây !</a>
